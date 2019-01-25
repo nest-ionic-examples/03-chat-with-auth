@@ -1,0 +1,182 @@
+== Ionic Application
+
+In the previous tutorial inside our Ionic chat app we modified the first screen, so after setting the nickname we go to another page where we select the chat room from a list, and then in the last screen we will only show messages for that specified chat room. In this tutorial we are going to modify the first screen and add a login form with username and password boxes. To do that, we are going to add a login page. After that we are going to create a sign-up page so users can be add themselves to our app.
+
+[NOTE]
+====
+Before continue with this part, in the console go to `chat-client` folder:
+
+```sh
+cd chat-clent
+```
+====
+
+=== Add Login Page
+
+The first step will be to create the login page. To do that run next command:
+
+```
+ionic g page pages/login
+```
+
+Then modify the `login.page.ts` file with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/pages/login/login.page.ts[]
+----
+<1> Sets the initial values of `credential` model.
+<2> Injects the `AuthService`.
+
+and the `login.page.html` file with next code:
+
+[source,html,options="nowrap"]
+----
+include::src/app/pages/login/login.page.html[]
+----
+<1> Attaches the `ngForm` value to the `f` variable and add the listener for `submit` event to use the `authSvc.login` function.
+<2> Attaches the `credentials.nickname` model to the `nickname` input
+<3> Attaches the `credentials.password` model to the `password` input
+<4> Creates an `ion-button` of type `submit` this way it emits `submit` event every time is clicked.
+<5> Creates a hidden submit button to listen when the user hits enter on any of the inputs
+<6> Creates a button that sends you to `sign-up` page whenever is clicked
+
+=== Add SignUp Page
+
+To add `sign-up` page we need to run next command:
+
+```
+ionic g page pages/sign-up
+```
+
+Then modify the `signup.pages.ts` file with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/pages/sign-up/sign-up.page.ts[]
+----
+
+and modify `sign-up.page.html` file with next code:
+
+[source,html,options="nowrap"]
+----
+include::src/app/pages/sign-up/sign-up.page.html[]
+----
+
+=== Add AuthService
+
+As you can see in previous code the `LoginPage` gets injected the `AuthService`. This service is going to be in charge of authentication logic. To create it run next command:
+
+```
+ionic g service services/auth
+```
+
+then modify it with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/services/auth.service.ts[]
+----
+<1> Variable used to memoize the current user value
+<2> Gets current user value from the decoded json-web-token.
+<3> Injects services needed.
+<4> Creates a POST request that sends the credentials to the server. Once the response is received, it saves the `user_token` into the `sessionStorage`, emits the that the user has been logged in and navigates to `select-room` page.
+<5> Creates a GET request to the `auth/logout` api. Once the response is received, it removes the `user_token` from `sessionStorage`, emits `loggedIn = false`, and navigates to `login` page.
+<6> Creates a POST request that sends the credentials to the server. Once the response is received, it navigates to `login` page.
+
+=== Add LoggedInService
+
+It will be needed to add a service that handles and shares the loggedIn status across the app. Then run next command:
+
+```
+ionic g service services/logged-in
+```
+
+then modify it with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/services/logged-in.service.ts[]
+----
+<1> `loggedIn$` subject will keep in memory the logged-in status. Also it will emit the new value whenever the user changes his status. Furthermore, we use a `ReplaySubject` so new subscribers always get the last value, this is useful for guards since they creates a new subscriber every time an url check occurs.
+<2> Checks if the token is not expired and emits the result to `loggedIn$` subject.
+<3> Subscribes to the `loggedIn$` subject. If the user is logged-in then it starts the websocket connection sending the token in the query parameter of the handshake query.
+
+=== Add @auth0/angular-jwt package
+
+Maybe the easiest way of handling authentication in any angular app is using the `@auth0/angular-jwt` package. This package creates an http interceptor and we will only need to add some small configurations parameters to the module to use it. Saying that the next step will be to run next command:
+
+```
+npm i -s @auth0/angular-jwt
+```
+then you need to create a `tokenGetter` function in `app.module.ts`, so we will need to add next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/app.module.ts[tags=token-getter-fn]
+----
+then add the `JwtModule` to the `AppModule`. To do it add next code:
+
+[source,sh,options="nowrap"]
+----
+include::src/app/app.module.ts[tag=jwt-module]
+----
+
+=== Add IsLoggedInGuard
+
+This guard will be in charge of checking if the user can enter to certain routes if the user has logged in previously. If not then the user will be redirected to the login page. To do this run next command:
+
+```
+ionic g guard guards/is-logged-in
+```
+
+Then modify the `is-logged-in.guard.ts` file with next code:
+
+
+[source,ts,options="nowrap"]
+----
+include::src/app/guards/is-logged-in.guard.ts[]
+----
+
+=== Add IsNotLoggedInGuard
+
+This guard will be in charge of checking if the user can enter to certain routes if the user is not logged. If so then the user will be redirected to the `select-room` page. To do this run next command:
+
+```
+ionic g guard guards/is-not-logged-in
+```
+
+Then modify the `is-logged-in.guard.ts` file with next code:
+
+
+[source,ts,options="nowrap"]
+----
+include::src/app/guards/is-not-logged-in.guard.ts[]
+----
+
+=== Change AppRoutingModule
+
+The next step will be to modify the `app-routing.module.ts` file with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/app-routing.module.ts[]
+----
+<1> Only users that have logged in previously can enter `chat-room` and `select-room` routes
+<2> Only users that have not logged in can enter `login` and `sign-up` routes.
+
+=== Add HttpErrorsInterceptor
+
+The final step will be to add an interceptor that handles all the errors produced by http requests. To do that run next code:
+
+```
+ionic g interceptor interceptors/http-errors
+```
+
+then modify `http-errors.interceptors.ts` with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app/interceptors/http-errors.interceptor.ts[]
+----
+<1> if the error status is `401` then the user will be redirected to the login page.

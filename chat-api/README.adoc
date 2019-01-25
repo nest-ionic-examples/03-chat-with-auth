@@ -1,0 +1,251 @@
+== Nest Application
+
+=== Database Setup
+
+In this section we are going to add authentication and authorization support to our `chat-api` server.
+
+[NOTE]
+====
+Before continue with this part, in the console go to `chat-api` folder:
+
+```sh
+cd chat-api
+```
+====
+
+=== Add Required Libraries
+
+In order to add support for authentication we are going to use a library called: `express-jwt`. As you can notice, this library is for an `expressjs` server. However you should remember that `nest-js` is just a framework made using typescript that runs on a `expressjs` server. So that, our next step will be to add `express-jwt` and some other libraries running next command:
+
+[source,sh,options="nowrap"]
+----
+npm i -s express-jwt jsonwebtoken bcrypt dotenv
+npm i -D @types/express-jwt @types/jsonwebtoken  @types/bcrypt @types/dotenv
+----
+
+=== Create Environment files
+
+Environment files are useful to save global configuration variables that will be used across the application. There are several ways to use this, for example you could see how the https://docs.nestjs.com/techniques/configuration[NestJs documentation] suggest to use it. However I will show you a shorter approach. This approach consist on creating `*.env` files under `environments` folder and `environment.ts` under `src` folder. So first created `environments/local.env` and add next code:
+
+[source,sh,options="nowrap"]
+----
+include::environments/local.env[]
+----
+
+Then create `src/environment.ts` file and add next code:
+
+[source,sh,options="nowrap"]
+----
+include::src/environment.ts[]
+----
+<1> Creates a helper interface that will be useful for autocomplete purposes
+<2> Reads the environment variables from `*.env` file. If `NODE_ENV` variable is not specified in the command line then it will use `local` as a default.
+
+At this point you can create as many `*.env` files in dependence of how you want to set up your development process. In general is good practice to have around five environments: `local`, `dev`, `qa`, `sta` and `prod`. You could have more or less if you want.
+
+==== Docker Compose Environment
+
+Also is good to be able to start our server using `docker-compose`, so we will need to create `local_docker.env` file under `environments` folder containing next code:
+
+[source,sh,options="nowrap"]
+----
+include::environments/local_docker.env[]
+----
+
+Then modify `docker-compose.yaml` file and add next code:
+
+[source,yaml,options="nowrap"]
+----
+include::docker-compose.yaml[tag=serve]
+----
+<1> Adds the service `serve` to the `docker-compose` file
+<2> Uses the `node` image
+<3> Starts `mongo` image any time the `serve` image is started.
+<4> expose the port `3000` to be accessed by host's browser
+<5> Sets the current directory to be `/app` directory inside the docker container
+<6> Sets the working directory to `/app`, so the commands will run inside this directory.
+<7> Runs the commands to install dependencies and start the server
+<8> Creates the environment variable `NODE_ENV` and sets the value `local_docker`, which will tell the server to use `local_docker.env` file for environment configuration variables.
+
+=== Add AuthMiddleware
+
+There are several ways of adding authentication to a NestJs application, you can check the https://docs.nestjs.com/techniques/authentication[authentication documentation] to see one of them. However I am going to show you a shorter way of adding authentication to a NestJs app. This shorter way consist on using `express-jwt` library which contains a function that allows us to create an authentication middleware. This middleware will run before any of the controller methods execution. This at the same time will allow us to reduce the work of adding an `AuthGuard` for each of the controllers methods. To do that, run next command:
+
+```
+nest g mi middlewares/auth
+```
+
+then modify `auth.middleware.ts` file with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/middlewares/auth.middleware.ts[]
+----
+<1> Inject `User` model to the middleware
+<2> Initialize `jwt` middleware
+<3> Set the secret password used to encode and decode json web tokens
+<4> Set the paths that are not going to be affected by this middleware.
+
+after that add the middleware to `app.module.ts` by mean of next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/app.module.ts[tag=app-use-jwt]
+----
+<1> Sets the base route where the `AuthMiddleware` will be applied
+
+so `app.module.ts` should look like this:
+
+[source,ts,options="nowrap"]
+----
+include::src/app.module.ts[tags=**]
+----
+<1> Sets the base route where the `AuthMiddleware` will be applied
+
+After Adding this middleware all request parameter passed to controllers will have added an `user` attribute. This attribute will contain the decoded json-web-token. This json-web-token will contain the `user._id` and the `user.nickname` values. Also this json-web-token will be created every time a user logs in.
+
+=== Modify User Model
+
+We need to modify `user.model.ts` so it can handle `password` and `loggedIn` attributes. Also we need to make `nickname` unique, so it is not mistaken with other users during authentication. To do that change `user.model.ts` with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/models/user.model.ts[]
+----
+<1> Makes `nickname` unique so there is only one user with that value
+<2> Adds `password` and make it `required`.
+<3> Adds `loggedIn` attribute. This will be in charge of checking if the user has logged out or still logged in.
+
+NOTE: notice that we no longer need to store `clientId` in the users collection. This is because we are going to add the `user._id` into the json-web-token, then we will use a websocket middleware to decode the json-web-token and retrieve the user from the users collection using the `user._id` stored in the json-web-token.
+
+=== Add CurrentUser annotation
+
+Thanks to `express-jwt` library all requests now will have a `user` attribute added to them. Saying that to get the user information you will only need to annotate the `request` parameter in controllers with `@Req()` annotation, for example:
+
+[source,ts,options="nowrap"]
+----
+@Controller('controller-url')
+export class SomeController {
+
+  @Get('method-url')
+  someMethod(@Req() req) {
+    console.log('user: ', req.user); // <1>
+  }
+}
+----
+<1> `req.user` will contain the decoded value saved in the json-web-token
+
+However this approach is not too clean. It will be better if we can do this for all controller methods and get the user information directly. NestJs has the ability to do that by creating `CurrentUser` annotation which will be in charge of retrieving this value. To do that we need to create a new file `decorators/current-user.decorator.ts` and add next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/decorators/current-user.decorator.ts[]
+----
+
+=== Add Auth Controller
+
+Next step will be adding `auth.controller`. This Controller will be in charge of handling login, logout and sign-up actions. To do that run next command:
+
+[source,sh,options="nowrap"]
+----
+nest g co controllers/auth
+----
+
+then modify `auth.controller.ts` with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/controllers/auth/auth.controller.ts[]
+----
+<1> Injects the `userModel`
+<2> Handles the `POST` request to `api/auth/login` url. This method will use the `nickname` coming from `credentials` body parameter and search for a user matching this `nickname`. If the user does not exist then throws an `UnauthorizedException`. If the user exists then compares the `credentials.password` with the one saved in the database. To do this comparision we use the `compare` method from the `bcrypt` library. If the passwords do not match then we throw an `UnauthorizedException`. If the passwords match then we set `user.loggedIn = true` and save the value to the database. Finally we send back to the client an object containing the json-web-token information, which at the same times contains `user._id` and `user.nickname`. This token is encoded by mean of the `sign` function of the `jsonwebtoken` library.
+<3> Handles the `GET` request to `api/auth/logout` url. This method will get the current user using the `CurrentUser` annotation created previously. Then it will sets `user.loggedIn = false` in the database. And finally it will send back an object containing a message `Logout Successfully`.
+<4> Handles the `POST` request to `api/auth/signup` url. This method will hash the password using the `hash` function from the `bcrypt` library and then create a new user and save it in the database.
+
+NOTE: In next tutorial we will add validations so the controller methods are more secure and handle better the wrong incoming data.
+
+=== Add UnauthrizedErrorFilter
+
+At this moment if you send any http request without authorization or with an expired token you will receive next response:
+
+[source,json,options="nowrap"]
+----
+{
+    "statusCode": 500,
+    "message": "Internal server error"
+}
+----
+
+And you are going to see in the server logs something like this:
+
+[source,sh,options="nowrap"]
+----
+UnauthorizedError: jwt expired
+----
+
+This is because NestJs does not know how to handle the error. To solve this problem, we should add an exception filter for `UnauthrizedError`. To do that we should run next command:
+
+```
+nest g f filters/unauthorized-error
+```
+
+then modify `unauthorized-error.filter.ts` file with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/filters/unauthorized-error.filter.ts[]
+----
+
+after that add the global filter to the application by adding next line:
+
+[source,ts,options="nowrap"]
+----
+include::src/main.ts[tag=use-unauthorized-error-filter]
+----
+
+so `main.ts` should look like follow:
+
+[source,ts,options="nowrap"]
+----
+include::src/main.ts[tags=**]
+----
+<1> Use global filter `UnauthrizedErrorFilter`
+
+Afther doing that you are going to get a response similar to next one whenever there is an error:
+
+[source,json,options="nowrap"]
+----
+{
+    "statusCode": 401,
+    "error": "invalid_token",
+    "message": "jwt expired"
+}
+----
+
+=== Add AuthAdapter
+
+Similarly to `auth.middleware.ts` websocket gateways need a middleware to handle authentication. However, we cannot add middlewares directly to websockets in `NestJs`. To do that we need to create first a websocket adapter and then create a middleware to handle websocket authentication. So create `auth.adapter.ts` file under `src/adapters` folder containing next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/adapters/auth.adapter.ts[]
+----
+<1> Creates the `CustomSocket` interface which allows us to stores the `decodedToken` object. This interface is not really needed because we could use `any` instead. However this will make easier to use the stored `decodedToken` variable in other classes.
+<2> Adds the middleware function to the websocket server.
+<3> Verifies the json-web-token and returns a callback function with error and decoded token parameters. Also uses `super-secret` as password for verification.
+<4> If the token is expired or was not created with the private password it sends back an error with message `Authentication error`.
+<5> If the token is verified then we store the `decodedToken` into the `socket` instance to be used later for gateways.
+<6> If the handshake query does not contains the token value then it sends an error with message `Authentication error`.
+
+=== Modify MessagesGateway
+
+After adding the `AuthAdapter`. we can modify the `messages.gateway.ts` file to make use of the stored `decodedToken`. So that, replace it with next code:
+
+[source,ts,options="nowrap"]
+----
+include::src/gateways/messages/messages.gateway.ts[]
+----
+<1> Listen for client disconnection and emits the message `users-changed` containing the user nickname stored in the `decodedToken` attribute and the event `left`.
+<2> Listen for client `enter-chat-room` and emits the message `users-changed` containing the user nickname stored in the `decodedToken` attribute and the event `joined`.
+<3> Listen for client `leave-chat-room` and emits the message `users-changed` containing the user nickname stored in the `decodedToken` attribute and the event `left`.
+<4> Listen for client `add-message`, then sets the `message.owner` using the `client.decodedToken._id` value. After that it save it to the `messages` collection in the database. Finally it sends back the created message to the clients connected tho the same room.

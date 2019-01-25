@@ -1,0 +1,1844 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.9">
+<title>03 Simple Chat: Add Authentication and Authorization</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
+<style>
+/* Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
+/* Uncomment @import statement to use as custom stylesheet */
+/*@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";*/
+article,aside,details,figcaption,figure,footer,header,hgroup,main,nav,section{display:block}
+audio,video{display:inline-block}
+audio:not([controls]){display:none;height:0}
+html{font-family:sans-serif;-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%}
+a{background:none}
+a:focus{outline:thin dotted}
+a:active,a:hover{outline:0}
+h1{font-size:2em;margin:.67em 0}
+abbr[title]{border-bottom:1px dotted}
+b,strong{font-weight:bold}
+dfn{font-style:italic}
+hr{-moz-box-sizing:content-box;box-sizing:content-box;height:0}
+mark{background:#ff0;color:#000}
+code,kbd,pre,samp{font-family:monospace;font-size:1em}
+pre{white-space:pre-wrap}
+q{quotes:"\201C" "\201D" "\2018" "\2019"}
+small{font-size:80%}
+sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
+sup{top:-.5em}
+sub{bottom:-.25em}
+img{border:0}
+svg:not(:root){overflow:hidden}
+figure{margin:0}
+fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
+legend{border:0;padding:0}
+button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
+button,input{line-height:normal}
+button,select{text-transform:none}
+button,html input[type="button"],input[type="reset"],input[type="submit"]{-webkit-appearance:button;cursor:pointer}
+button[disabled],html input[disabled]{cursor:default}
+input[type="checkbox"],input[type="radio"]{box-sizing:border-box;padding:0}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
+textarea{overflow:auto;vertical-align:top}
+table{border-collapse:collapse;border-spacing:0}
+*,*::before,*::after{-moz-box-sizing:border-box;-webkit-box-sizing:border-box;box-sizing:border-box}
+html,body{font-size:100%}
+body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;font-weight:400;font-style:normal;line-height:1;position:relative;cursor:auto;tab-size:4;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
+a:hover{cursor:pointer}
+img,object,embed{max-width:100%;height:auto}
+object,embed{height:100%}
+img{-ms-interpolation-mode:bicubic}
+.left{float:left!important}
+.right{float:right!important}
+.text-left{text-align:left!important}
+.text-right{text-align:right!important}
+.text-center{text-align:center!important}
+.text-justify{text-align:justify!important}
+.hide{display:none}
+img,object,svg{display:inline-block;vertical-align:middle}
+textarea{height:auto;min-height:50px}
+select{width:100%}
+.center{margin-left:auto;margin-right:auto}
+.stretch{width:100%}
+.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
+div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0;direction:ltr}
+a{color:#2156a5;text-decoration:underline;line-height:inherit}
+a:hover,a:focus{color:#1d4b8f}
+a img{border:0}
+p{font-family:inherit;font-weight:400;font-size:1em;line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
+p aside{font-size:.875em;line-height:1.35;font-style:italic}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
+h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
+h1{font-size:2.125em}
+h2{font-size:1.6875em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
+h4,h5{font-size:1.125em}
+h6{font-size:1em}
+hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em;height:0}
+em,i{font-style:italic;line-height:inherit}
+strong,b{font-weight:bold;line-height:inherit}
+small{font-size:60%;line-height:inherit}
+code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
+ul,ol,dl{font-size:1em;line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
+ul,ol{margin-left:1.5em}
+ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0;font-size:1em}
+ul.square li ul,ul.circle li ul,ul.disc li ul{list-style:inherit}
+ul.square{list-style-type:square}
+ul.circle{list-style-type:circle}
+ul.disc{list-style-type:disc}
+ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
+dl dt{margin-bottom:.3125em;font-weight:bold}
+dl dd{margin-bottom:1.25em}
+abbr,acronym{text-transform:uppercase;font-size:90%;color:rgba(0,0,0,.8);border-bottom:1px dotted #ddd;cursor:help}
+abbr{text-transform:none}
+blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
+blockquote cite{display:block;font-size:.9375em;color:rgba(0,0,0,.6)}
+blockquote cite::before{content:"\2014 \0020"}
+blockquote cite a,blockquote cite a:visited{color:rgba(0,0,0,.6)}
+blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
+@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
+h1{font-size:2.75em}
+h2{font-size:2.3125em}
+h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
+h4{font-size:1.4375em}}
+table{background:#fff;margin-bottom:1.25em;border:solid 1px #dedede}
+table thead,table tfoot{background:#f7f8f7}
+table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
+table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
+table tr.even,table tr.alt{background:#f8f8f7}
+table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{display:table-cell;line-height:1.6}
+h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
+h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
+.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
+.clearfix::after,.float-group::after{clear:both}
+:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;-webkit-border-radius:4px;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed;word-wrap:break-word}
+:not(pre)>code.nobreak{word-wrap:normal}
+:not(pre)>code.nowrap{white-space:nowrap}
+pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
+pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
+pre>code{display:block}
+pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
+em em{font-style:normal}
+strong strong{font-weight:400}
+.keyseq{color:rgba(51,51,51,.8)}
+kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;-webkit-border-radius:3px;border-radius:3px;-webkit-box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em white inset;box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 0 .1em #fff inset;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
+.keyseq kbd:first-child{margin-left:0}
+.keyseq kbd:last-child{margin-right:0}
+.menuseq,.menuref{color:#000}
+.menuseq b:not(.caret),.menuref{font-weight:inherit}
+.menuseq{word-spacing:-.02em}
+.menuseq b.caret{font-size:1.25em;line-height:.8}
+.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
+b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
+b.button::before{content:"[";padding:0 3px 0 2px}
+b.button::after{content:"]";padding:0 2px 0 3px}
+p a>code:hover{color:rgba(0,0,0,.9)}
+#header,#content,#footnotes,#footer{width:100%;margin-left:auto;margin-right:auto;margin-top:0;margin-bottom:0;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
+#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
+#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
+#content{margin-top:1.25em}
+#content::before{content:none}
+#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
+#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
+#header>h1:only-child,body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
+#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:-ms-flexbox;display:-webkit-flex;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap}
+#header .details span:first-child{margin-left:-.125em}
+#header .details span.email a{color:rgba(0,0,0,.85)}
+#header .details br{display:none}
+#header .details br+span::before{content:"\00a0\2013\00a0"}
+#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
+#header .details br+span#revremark::before{content:"\00a0|\00a0"}
+#header #revnumber{text-transform:capitalize}
+#header #revnumber::after{content:"\00a0"}
+#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
+#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
+#toc>ul{margin-left:.125em}
+#toc ul.sectlevel0>li>a{font-style:italic}
+#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
+#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
+#toc li{line-height:1.3334;margin-top:.3334em}
+#toc a{text-decoration:none}
+#toc a:active{text-decoration:underline}
+#toctitle{color:#7a2518;font-size:1.2em}
+@media screen and (min-width:768px){#toctitle{font-size:1.375em}
+body.toc2{padding-left:15em;padding-right:0}
+#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
+#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
+#toc.toc2>ul{font-size:.9em;margin-bottom:0}
+#toc.toc2 ul ul{margin-left:0;padding-left:1em}
+#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
+body.toc2.toc-right{padding-left:0;padding-right:15em}
+body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
+@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
+#toc.toc2{width:20em}
+#toc.toc2 #toctitle{font-size:1.375em}
+#toc.toc2>ul{font-size:.95em}
+#toc.toc2 ul ul{padding-left:1.25em}
+body.toc2.toc-right{padding-left:0;padding-right:20em}}
+#content #toc{border-style:solid;border-width:1px;border-color:#e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;-webkit-border-radius:4px;border-radius:4px}
+#content #toc>:first-child{margin-top:0}
+#content #toc>:last-child{margin-bottom:0}
+#footer{max-width:100%;background:rgba(0,0,0,.8);padding:1.25em}
+#footer-text{color:rgba(255,255,255,.8);line-height:1.44}
+#content{margin-bottom:.625em}
+.sect1{padding-bottom:.625em}
+@media screen and (min-width:768px){#content{margin-bottom:1.25em}
+.sect1{padding-bottom:1.25em}}
+.sect1:last-child{padding-bottom:0}
+.sect1+.sect1{border-top:1px solid #e7e7e9}
+#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
+#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
+#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
+#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
+#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
+details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
+details>summary:first-of-type{cursor:pointer;display:list-item;outline:none;margin-bottom:.75em}
+.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
+table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
+.paragraph.lead>p,#preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
+table.tableblock #preamble>.sectionbody>[class="paragraph"]:first-of-type p{font-size:inherit}
+.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
+.admonitionblock>table td.icon{text-align:center;width:80px}
+.admonitionblock>table td.icon img{max-width:none}
+.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
+.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6)}
+.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
+.exampleblock>.content{border-style:solid;border-width:1px;border-color:#e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;-webkit-border-radius:4px;border-radius:4px}
+.exampleblock>.content>:first-child{margin-top:0}
+.exampleblock>.content>:last-child{margin-bottom:0}
+.sidebarblock{border-style:solid;border-width:1px;border-color:#dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;-webkit-border-radius:4px;border-radius:4px}
+.sidebarblock>:first-child{margin-top:0}
+.sidebarblock>:last-child{margin-bottom:0}
+.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
+.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
+.literalblock pre,.listingblock>.content>pre{-webkit-border-radius:4px;border-radius:4px;word-wrap:break-word;overflow-x:auto;padding:1em;font-size:.8125em}
+@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
+@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
+.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class="highlight"],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
+.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
+.listingblock>.content{position:relative}
+.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
+.listingblock:hover code[data-lang]::before{display:block}
+.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
+.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
+.listingblock pre.highlightjs{padding:0}
+.listingblock pre.highlightjs>code{padding:1em;-webkit-border-radius:4px;border-radius:4px}
+.listingblock pre.prettyprint{border-width:0}
+.prettyprint{background:#f7f7f8}
+pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
+pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
+pre.prettyprint li code[data-lang]::before{opacity:1}
+pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
+table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
+table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
+table.linenotable td.code{padding-left:.75em}
+table.linenotable td.linenos{border-right:1px solid currentColor;opacity:.35;padding-right:.5em}
+pre.pygments .lineno{border-right:1px solid currentColor;opacity:.35;display:inline-block;margin-right:.75em}
+pre.pygments .lineno::before{content:"";margin-right:-.125em}
+.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
+.quoteblock>.title{margin-left:-1.5em;margin-bottom:.75em}
+.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
+.quoteblock blockquote{margin:0;padding:0;border:0}
+.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
+.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
+.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
+.verseblock{margin:0 1em 1.25em}
+.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
+.verseblock pre strong{font-weight:400}
+.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
+.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
+.quoteblock .attribution br,.verseblock .attribution br{display:none}
+.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
+.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
+.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
+.quoteblock.abstract{margin:0 1em 1.25em;display:block}
+.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
+.quoteblock.excerpt,.quoteblock .quoteblock{margin:0 0 1.25em;padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
+.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
+.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;text-align:left;margin-right:0}
+table.tableblock{max-width:100%;border-collapse:separate}
+p.tableblock:last-child{margin-bottom:0}
+td.tableblock>.content>:last-child{margin-bottom:-1.25em}
+td.tableblock>.content>:last-child.sidebarblock{margin-bottom:0}
+table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
+table.grid-all>thead>tr>.tableblock,table.grid-all>tbody>tr>.tableblock{border-width:0 1px 1px 0}
+table.grid-all>tfoot>tr>.tableblock{border-width:1px 1px 0 0}
+table.grid-cols>*>tr>.tableblock{border-width:0 1px 0 0}
+table.grid-rows>thead>tr>.tableblock,table.grid-rows>tbody>tr>.tableblock{border-width:0 0 1px}
+table.grid-rows>tfoot>tr>.tableblock{border-width:1px 0 0}
+table.grid-all>*>tr>.tableblock:last-child,table.grid-cols>*>tr>.tableblock:last-child{border-right-width:0}
+table.grid-all>tbody>tr:last-child>.tableblock,table.grid-all>thead:last-child>tr>.tableblock,table.grid-rows>tbody>tr:last-child>.tableblock,table.grid-rows>thead:last-child>tr>.tableblock{border-bottom-width:0}
+table.frame-all{border-width:1px}
+table.frame-sides{border-width:0 1px}
+table.frame-topbot,table.frame-ends{border-width:1px 0}
+table.stripes-all tr,table.stripes-odd tr:nth-of-type(odd),table.stripes-even tr:nth-of-type(even),table.stripes-hover tr:hover{background:#f8f8f7}
+th.halign-left,td.halign-left{text-align:left}
+th.halign-right,td.halign-right{text-align:right}
+th.halign-center,td.halign-center{text-align:center}
+th.valign-top,td.valign-top{vertical-align:top}
+th.valign-bottom,td.valign-bottom{vertical-align:bottom}
+th.valign-middle,td.valign-middle{vertical-align:middle}
+table thead th,table tfoot th{font-weight:bold}
+tbody tr th{display:table-cell;line-height:1.6;background:#f7f8f7}
+tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
+p.tableblock>code:only-child{background:none;padding:0}
+p.tableblock{font-size:1em}
+ol{margin-left:1.75em}
+ul li ol{margin-left:1.5em}
+dl dd{margin-left:1.125em}
+dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
+ol>li p,ul>li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
+ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
+ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
+ul.unstyled,ol.unstyled{margin-left:0}
+ul.checklist{margin-left:.625em}
+ul.checklist li>p:first-child>.fa-square-o:first-child,ul.checklist li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
+ul.checklist li>p:first-child>input[type="checkbox"]:first-child{margin-right:.25em}
+ul.inline{display:-ms-flexbox;display:-webkit-box;display:flex;-ms-flex-flow:row wrap;-webkit-flex-flow:row wrap;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
+ul.inline>li{margin-left:1.25em}
+.unstyled dl dt{font-weight:400;font-style:normal}
+ol.arabic{list-style-type:decimal}
+ol.decimal{list-style-type:decimal-leading-zero}
+ol.loweralpha{list-style-type:lower-alpha}
+ol.upperalpha{list-style-type:upper-alpha}
+ol.lowerroman{list-style-type:lower-roman}
+ol.upperroman{list-style-type:upper-roman}
+ol.lowergreek{list-style-type:lower-greek}
+.hdlist>table,.colist>table{border:0;background:none}
+.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
+td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
+td.hdlist1{font-weight:bold;padding-bottom:1.25em}
+.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
+.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
+.colist td:not([class]):first-child img{max-width:none}
+.colist td:not([class]):last-child{padding:.25em 0}
+.thumb,.th{line-height:0;display:inline-block;border:solid 4px #fff;-webkit-box-shadow:0 0 0 1px #ddd;box-shadow:0 0 0 1px #ddd}
+.imageblock.left{margin:.25em .625em 1.25em 0}
+.imageblock.right{margin:.25em 0 1.25em .625em}
+.imageblock>.title{margin-bottom:0}
+.imageblock.thumb,.imageblock.th{border-width:6px}
+.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
+.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
+.image.left{margin-right:.625em}
+.image.right{margin-left:.625em}
+a.image{text-decoration:none;display:inline-block}
+a.image object{pointer-events:none}
+sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
+sup.footnote a,sup.footnoteref a{text-decoration:none}
+sup.footnote a:active,sup.footnoteref a:active{text-decoration:underline}
+#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
+#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
+#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
+#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
+#footnotes .footnote:last-of-type{margin-bottom:0}
+#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
+.gist .file-data>table{border:0;background:#fff;width:100%;margin-bottom:0}
+.gist .file-data>table td.line-data{width:99%}
+div.unbreakable{page-break-inside:avoid}
+.big{font-size:larger}
+.small{font-size:smaller}
+.underline{text-decoration:underline}
+.overline{text-decoration:overline}
+.line-through{text-decoration:line-through}
+.aqua{color:#00bfbf}
+.aqua-background{background:#00fafa}
+.black{color:#000}
+.black-background{background:#000}
+.blue{color:#0000bf}
+.blue-background{background:#0000fa}
+.fuchsia{color:#bf00bf}
+.fuchsia-background{background:#fa00fa}
+.gray{color:#606060}
+.gray-background{background:#7d7d7d}
+.green{color:#006000}
+.green-background{background:#007d00}
+.lime{color:#00bf00}
+.lime-background{background:#00fa00}
+.maroon{color:#600000}
+.maroon-background{background:#7d0000}
+.navy{color:#000060}
+.navy-background{background:#00007d}
+.olive{color:#606000}
+.olive-background{background:#7d7d00}
+.purple{color:#600060}
+.purple-background{background:#7d007d}
+.red{color:#bf0000}
+.red-background{background:#fa0000}
+.silver{color:#909090}
+.silver-background{background:#bcbcbc}
+.teal{color:#006060}
+.teal-background{background:#007d7d}
+.white{color:#bfbfbf}
+.white-background{background:#fafafa}
+.yellow{color:#bfbf00}
+.yellow-background{background:#fafa00}
+span.icon>.fa{cursor:default}
+a span.icon>.fa{cursor:inherit}
+.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
+.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
+.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
+.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
+.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
+.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
+.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);-webkit-border-radius:100px;border-radius:100px;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
+.conum[data-value] *{color:#fff!important}
+.conum[data-value]+b{display:none}
+.conum[data-value]::after{content:attr(data-value)}
+pre .conum[data-value]{position:relative;top:-.125em}
+b.conum *{color:inherit!important}
+.conum:not([data-value]):empty{display:none}
+dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
+h1,h2,p,td.content,span.alt{letter-spacing:-.01em}
+p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
+p,blockquote,dt,td.content,span.alt{font-size:1.0625rem}
+p{margin-bottom:1.25rem}
+.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
+.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;-webkit-box-shadow:0 1px 4px #e0e0dc;box-shadow:0 1px 4px #e0e0dc}
+.print-only{display:none!important}
+@page{margin:1.25cm .75cm}
+@media print{*{-webkit-box-shadow:none!important;box-shadow:none!important;text-shadow:none!important}
+html{font-size:80%}
+a{color:inherit!important;text-decoration:underline!important}
+a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
+a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
+abbr[title]::after{content:" (" attr(title) ")"}
+pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
+thead{display:table-header-group}
+svg{max-width:100%}
+p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
+h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
+#toc,.sidebarblock,.exampleblock>.content{background:none!important}
+#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
+body.book #header{text-align:center}
+body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
+body.book #header .details{border:0!important;display:block;padding:0!important}
+body.book #header .details span:first-child{margin-left:0!important}
+body.book #header .details br{display:block}
+body.book #header .details br+span::before{content:none!important}
+body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
+body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
+.listingblock code[data-lang]::before{display:block}
+#footer{padding:0 .9375em}
+.hide-on-print{display:none!important}
+.print-only{display:block!important}
+.hide-for-print{display:none!important}
+.show-for-print{display:inherit!important}}
+@media print,amzn-kf8{#header>h1:first-child{margin-top:1.25rem}
+.sect1{padding:0!important}
+.sect1+.sect1{border:0}
+#footer{background:none}
+#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
+@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="article toc2 toc-left">
+<div id="header">
+<h1>03 Simple Chat: Add Authentication and Authorization</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_nest_application">Nest Application</a>
+<ul class="sectlevel2">
+<li><a href="#_database_setup">Database Setup</a></li>
+<li><a href="#_add_required_libraries">Add Required Libraries</a></li>
+<li><a href="#_create_environment_files">Create Environment files</a></li>
+<li><a href="#_add_authmiddleware">Add AuthMiddleware</a></li>
+<li><a href="#_modify_user_model">Modify User Model</a></li>
+<li><a href="#_add_currentuser_annotation">Add CurrentUser annotation</a></li>
+<li><a href="#_add_auth_controller">Add Auth Controller</a></li>
+<li><a href="#_add_unauthrizederrorfilter">Add UnauthrizedErrorFilter</a></li>
+<li><a href="#_add_authadapter">Add AuthAdapter</a></li>
+<li><a href="#_modify_messagesgateway">Modify MessagesGateway</a></li>
+</ul>
+</li>
+<li><a href="#_ionic_application">Ionic Application</a>
+<ul class="sectlevel2">
+<li><a href="#_add_login_page">Add Login Page</a></li>
+<li><a href="#_add_signup_page">Add SignUp Page</a></li>
+<li><a href="#_add_authservice">Add AuthService</a></li>
+<li><a href="#_add_loggedinservice">Add LoggedInService</a></li>
+<li><a href="#_add_auth0angular_jwt_package">Add @auth0/angular-jwt package</a></li>
+<li><a href="#_add_isloggedinguard">Add IsLoggedInGuard</a></li>
+<li><a href="#_add_isnotloggedinguard">Add IsNotLoggedInGuard</a></li>
+<li><a href="#_change_approutingmodule">Change AppRoutingModule</a></li>
+<li><a href="#_add_httperrorsinterceptor">Add HttpErrorsInterceptor</a></li>
+</ul>
+</li>
+<li><a href="#_conclusion">Conclusion</a></li>
+<li><a href="#_comments">Comments</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="sidebarblock">
+<div class="content">
+<div class="paragraph">
+<p>source code: <a href="https://github.com/nest-ionic-examples/03-chat-with-auth" class="bare">https://github.com/nest-ionic-examples/03-chat-with-auth</a></p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>In <a href="https://nest-ionic-examples.github.io/02-chat-with-db">previous tutorial</a> we added support for MongoDb database to store messages, users, and rooms to our chat application. In this tutorial we are going to add authentication and authorization support. There are several ways of doing this. However, in this tutorial we are going to use <code>JWT</code> authentication. At the same time there are also several ways of authenticating with <code>JWT</code>. The first one, is to handle the authentication in our server without a third party service. And the second one, is to let a third party single-sign-on server like <a href="https://auth0.com/">auth0</a> to handle the authentication. In this tutorial we are going to discuss the first one, and in other tutorials we are going to discuss the second one.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="chat-demo.gif" alt="chat demo">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_nest_application">Nest Application</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_database_setup">Database Setup</h3>
+<div class="paragraph">
+<p>In this section we are going to add authentication and authorization support to our <code>chat-api</code> server.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Before continue with this part, in the console go to <code>chat-api</code> folder:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">cd chat-api</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_required_libraries">Add Required Libraries</h3>
+<div class="paragraph">
+<p>In order to add support for authentication we are going to use a library called: <code>express-jwt</code>. As you can notice, this library is for an <code>expressjs</code> server. However you should remember that <code>nest-js</code> is just a framework made using typescript that runs on a <code>expressjs</code> server. So that, our next step will be to add <code>express-jwt</code> and some other libraries running next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">npm i -s express-jwt jsonwebtoken bcrypt dotenv
+npm i -D @types/express-jwt @types/jsonwebtoken  @types/bcrypt @types/dotenv</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_create_environment_files">Create Environment files</h3>
+<div class="paragraph">
+<p>Environment files are useful to save global configuration variables that will be used across the application. There are several ways to use this, for example you could see how the <a href="https://docs.nestjs.com/techniques/configuration">NestJs documentation</a> suggest to use it. However I will show you a shorter approach. This approach consist on creating <code>*.env</code> files under <code>environments</code> folder and <code>environment.ts</code> under <code>src</code> folder. So first created <code>environments/local.env</code> and add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">MONGO_DB_URL=mongodb://chat-admin:password123@localhost/chat
+JWT_SECRET_PASSWORD=supper-secret</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then create <code>src/environment.ts</code> file and add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">import { parse } from 'dotenv';
+import { readFileSync } from 'fs';
+
+export interface Environment { <i class="conum" data-value="1"></i><b>(1)</b>
+  MONGO_DB_URL: string;
+  JWT_SECRET_PASSWORD: string;
+}
+
+export const environment: Environment =
+  parse(readFileSync(`environments/${process.env.NODE_ENV || 'local'}.env`)) as any; <i class="conum" data-value="2"></i><b>(2)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Creates a helper interface that will be useful for autocomplete purposes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Reads the environment variables from <code>*.env</code> file. If <code>NODE_ENV</code> variable is not specified in the command line then it will use <code>local</code> as a default.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>At this point you can create as many <code>*.env</code> files in dependence of how you want to set up your development process. In general is good practice to have around five environments: <code>local</code>, <code>dev</code>, <code>qa</code>, <code>sta</code> and <code>prod</code>. You could have more or less if you want.</p>
+</div>
+<div class="sect3">
+<h4 id="_docker_compose_environment">Docker Compose Environment</h4>
+<div class="paragraph">
+<p>Also is good to be able to start our server using <code>docker-compose</code>, so we will need to create <code>local_docker.env</code> file under <code>environments</code> folder containing next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">MONGO_DB_URL=mongodb://chat-admin:password123@mongo/chat
+JWT_SECRET_PASSWORD=supper-secret</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then modify <code>docker-compose.yaml</code> file and add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="yaml" class="language-yaml hljs">  serve: <i class="conum" data-value="1"></i><b>(1)</b>
+    image: node <i class="conum" data-value="2"></i><b>(2)</b>
+    depends_on: <i class="conum" data-value="3"></i><b>(3)</b>
+      - mongo
+    ports: <i class="conum" data-value="4"></i><b>(4)</b>
+      - 3000:3000
+    volumes: <i class="conum" data-value="5"></i><b>(5)</b>
+      - .:/app
+    working_dir: /app <i class="conum" data-value="6"></i><b>(6)</b>
+    command: bash -c "npm i &amp;&amp; npm start" <i class="conum" data-value="7"></i><b>(7)</b>
+    environment: <i class="conum" data-value="8"></i><b>(8)</b>
+      NODE_ENV: local_docker</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Adds the service <code>serve</code> to the <code>docker-compose</code> file</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Uses the <code>node</code> image</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Starts <code>mongo</code> image any time the <code>serve</code> image is started.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>expose the port <code>3000</code> to be accessed by host&#8217;s browser</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Sets the current directory to be <code>/app</code> directory inside the docker container</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Sets the working directory to <code>/app</code>, so the commands will run inside this directory.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="7"></i><b>7</b></td>
+<td>Runs the commands to install dependencies and start the server</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="8"></i><b>8</b></td>
+<td>Creates the environment variable <code>NODE_ENV</code> and sets the value <code>local_docker</code>, which will tell the server to use <code>local_docker.env</code> file for environment configuration variables.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_authmiddleware">Add AuthMiddleware</h3>
+<div class="paragraph">
+<p>There are several ways of adding authentication to a NestJs application, you can check the <a href="https://docs.nestjs.com/techniques/authentication">authentication documentation</a> to see one of them. However I am going to show you a shorter way of adding authentication to a NestJs app. This shorter way consist on using <code>express-jwt</code> library which contains a function that allows us to create an authentication middleware. This middleware will run before any of the controller methods execution. This at the same time will allow us to reduce the work of adding an <code>AuthGuard</code> for each of the controllers methods. To do that, run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">nest g mi middlewares/auth</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify <code>auth.middleware.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable, MiddlewareFunction, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from 'nestjs-typegoose';
+import { ModelType } from 'typegoose';
+import { User } from '../models/user.model';
+import { environment } from '../environment';
+import jwt = require('express-jwt');
+
+@Injectable()
+export class AuthMiddleware implements NestMiddleware {
+  constructor(@InjectModel(User) private readonly userModel: ModelType&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
+
+  resolve(...args: any[]): MiddlewareFunction {
+    return jwt({ <i class="conum" data-value="2"></i><b>(2)</b>
+      secret: environment.JWT_SECRET_PASSWORD, <i class="conum" data-value="3"></i><b>(3)</b>
+      isRevoked: async (req, payload, done) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+        if (!payload._id) {
+          return done(new UnauthorizedException('The token contains invalid credentials or has expired'));
+        }
+
+        const user = await this.userModel.findById(payload._id).exec();
+        if (!user || !user.loggedIn) return done(new UnauthorizedException('The user has been logged out'));
+
+        done(null, false);
+      },
+    }).unless({path: ['/api/auth/login', '/api/auth/sign-up']}); <i class="conum" data-value="5"></i><b>(5)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Inject <code>User</code> model to the middleware</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Initialize <code>jwt</code> middleware</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Set the secret password used to encode and decode json web tokens</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Set the paths that are not going to be affected by this middleware.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>after that add the middleware to <code>app.module.ts</code> by mean of next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware)
+      .forRoutes('/api'); <i class="conum" data-value="1"></i><b>(1)</b>
+  }</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets the base route where the <code>AuthMiddleware</code> will be applied</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>so <code>app.module.ts</code> should look like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { AppController } from './app.controller';
+import { AppService } from './app.service';
+import { MessagesGateway } from './gateways/messages/messages.gateway';
+import { MessagesController } from './controllers/messages/messages.controller';
+import { RoomsController } from './controllers/rooms/rooms.controller';
+import { TypegooseModule } from 'nestjs-typegoose';
+import { Message } from './models/message.model';
+import { Room } from './models/room.model';
+import { User } from './models/user.model';
+import { AuthController } from './controllers/auth/auth.controller';
+import { AuthMiddleware } from './middlewares/auth.middleware';
+import { environment } from './environment';
+
+@Module({
+  imports: [
+    TypegooseModule.forRoot(environment.MONGO_DB_URL, {}),
+    TypegooseModule.forFeature(Message, Room, User),
+  ],
+  controllers: [
+    AppController,
+    RoomsController,
+    MessagesController,
+    AuthController,
+  ],
+  providers: [AppService, MessagesGateway],
+})
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware)
+      .forRoutes('/api'); <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets the base route where the <code>AuthMiddleware</code> will be applied</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>After Adding this middleware all request parameter passed to controllers will have added an <code>user</code> attribute. This attribute will contain the decoded json-web-token. This json-web-token will contain the <code>user._id</code> and the <code>user.nickname</code> values. Also this json-web-token will be created every time a user logs in.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modify_user_model">Modify User Model</h3>
+<div class="paragraph">
+<p>We need to modify <code>user.model.ts</code> so it can handle <code>password</code> and <code>loggedIn</code> attributes. Also we need to make <code>nickname</code> unique, so it is not mistaken with other users during authentication. To do that change <code>user.model.ts</code> with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Message } from './message.model';
+import { Room } from './room.model';
+import { pre, prop, Ref, Typegoose } from 'typegoose';
+import { ObjectID } from 'bson';
+
+export class User extends Typegoose {
+  _id: ObjectID | string;
+
+  @prop({
+    required: true,
+    maxlength: 20,
+    minlength: 5,
+    unique: true, <i class="conum" data-value="1"></i><b>(1)</b>
+  })
+  nickname: string;
+
+  @prop({required: true})
+  password: string; <i class="conum" data-value="2"></i><b>(2)</b>
+
+  @prop()
+  loggedIn: boolean; <i class="conum" data-value="3"></i><b>(3)</b>
+
+  messages: Ref&lt;Message&gt;[];
+
+  joinedRooms: Ref&lt;Room&gt;[];
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Makes <code>nickname</code> unique so there is only one user with that value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Adds <code>password</code> and make it <code>required</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Adds <code>loggedIn</code> attribute. This will be in charge of checking if the user has logged out or still logged in.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+notice that we no longer need to store <code>clientId</code> in the users collection. This is because we are going to add the <code>user._id</code> into the json-web-token, then we will use a websocket middleware to decode the json-web-token and retrieve the user from the users collection using the <code>user._id</code> stored in the json-web-token.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_currentuser_annotation">Add CurrentUser annotation</h3>
+<div class="paragraph">
+<p>Thanks to <code>express-jwt</code> library all requests now will have a <code>user</code> attribute added to them. Saying that to get the user information you will only need to annotate the <code>request</code> parameter in controllers with <code>@Req()</code> annotation, for example:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">@Controller('controller-url')
+export class SomeController {
+
+  @Get('method-url')
+  someMethod(@Req() req) {
+    console.log('user: ', req.user); <i class="conum" data-value="1"></i><b>(1)</b>
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>req.user</code> will contain the decoded value saved in the json-web-token</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>However this approach is not too clean. It will be better if we can do this for all controller methods and get the user information directly. NestJs has the ability to do that by creating <code>CurrentUser</code> annotation which will be in charge of retrieving this value. To do that we need to create a new file <code>decorators/current-user.decorator.ts</code> and add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { createParamDecorator } from '@nestjs/common';
+
+export const CurrentUser = createParamDecorator((data, req) =&gt; req.user);</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_auth_controller">Add Auth Controller</h3>
+<div class="paragraph">
+<p>Next step will be adding <code>auth.controller</code>. This Controller will be in charge of handling login, logout and sign-up actions. To do that run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">nest g co controllers/auth</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify <code>auth.controller.ts</code> with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
+import { InjectModel } from 'nestjs-typegoose';
+import { User } from '../../models/user.model';
+import { ModelType } from 'typegoose';
+import { sign } from 'jsonwebtoken';
+import { compare, hash } from 'bcrypt';
+import { CurrentUser } from '../../decorators/current-user.decorator';
+import { environment } from '../../environment';
+
+@Controller('api/auth')
+export class AuthController {
+  constructor(@InjectModel(User) private readonly userModel: ModelType&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
+
+  @Post('login')
+  async login(@Body() credentials) { <i class="conum" data-value="2"></i><b>(2)</b>
+    const user = await this.userModel.findOne({nickname: credentials.nickname}).exec();
+    if (!user) throw new UnauthorizedException('The nickname/password combination is invalid');
+
+    const isMatch = await compare(credentials.password, user.password);
+    if (!isMatch) throw new UnauthorizedException('The nickname/password combination is invalid');
+
+    user.loggedIn = true;
+
+    await user.save();
+
+    return {token: sign({_id: user._id, nickname: user.nickname}, environment.JWT_SECRET_PASSWORD, {expiresIn: '1h'})};
+  }
+
+  @Get('logout')
+  async logout(@CurrentUser() user) { <i class="conum" data-value="3"></i><b>(3)</b>
+    await this.userModel.findByIdAndUpdate(user._id, {loggedIn: false});
+    return {message: 'Logout Successfully'};
+  }
+
+  @Post('sign-up')
+  async signup(@Body() signupCredentials) { <i class="conum" data-value="4"></i><b>(4)</b>
+    signupCredentials.password = await hash(signupCredentials.password, 10);
+    await this.userModel.create(signupCredentials);
+    return {message: 'User Created Successfully'};
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Injects the <code>userModel</code></td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Handles the <code>POST</code> request to <code>api/auth/login</code> url. This method will use the <code>nickname</code> coming from <code>credentials</code> body parameter and search for a user matching this <code>nickname</code>. If the user does not exist then throws an <code>UnauthorizedException</code>. If the user exists then compares the <code>credentials.password</code> with the one saved in the database. To do this comparision we use the <code>compare</code> method from the <code>bcrypt</code> library. If the passwords do not match then we throw an <code>UnauthorizedException</code>. If the passwords match then we set <code>user.loggedIn = true</code> and save the value to the database. Finally we send back to the client an object containing the json-web-token information, which at the same times contains <code>user._id</code> and <code>user.nickname</code>. This token is encoded by mean of the <code>sign</code> function of the <code>jsonwebtoken</code> library.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Handles the <code>GET</code> request to <code>api/auth/logout</code> url. This method will get the current user using the <code>CurrentUser</code> annotation created previously. Then it will sets <code>user.loggedIn = false</code> in the database. And finally it will send back an object containing a message <code>Logout Successfully</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Handles the <code>POST</code> request to <code>api/auth/signup</code> url. This method will hash the password using the <code>hash</code> function from the <code>bcrypt</code> library and then create a new user and save it in the database.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+In next tutorial we will add validations so the controller methods are more secure and handle better the wrong incoming data.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_unauthrizederrorfilter">Add UnauthrizedErrorFilter</h3>
+<div class="paragraph">
+<p>At this moment if you send any http request without authorization or with an expired token you will receive next response:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="json" class="language-json hljs">{
+    "statusCode": 500,
+    "message": "Internal server error"
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And you are going to see in the server logs something like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">UnauthorizedError: jwt expired</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is because NestJs does not know how to handle the error. To solve this problem, we should add an exception filter for <code>UnauthrizedError</code>. To do that we should run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">nest g f filters/unauthorized-error</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify <code>unauthorized-error.filter.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { ArgumentsHost, Catch, ExceptionFilter } from '@nestjs/common';
+import { UnauthorizedError } from 'express-jwt';
+
+@Catch(UnauthorizedError)
+export class UnauthorizedErrorFilter implements ExceptionFilter {
+  catch(exception: UnauthorizedError, host: ArgumentsHost) {
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const status = exception.status;
+
+    console.log('exception.message: ', exception.message);
+
+    response
+      .status(status)
+      .json({
+        statusCode: status,
+        error: exception.code,
+        message: exception.message,
+      });
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>after that add the global filter to the application by adding next line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">  app.useGlobalFilters(new UnauthorizedErrorFilter()); <i class="conum" data-value="1"></i><b>(1)</b></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>so <code>main.ts</code> should look like follow:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import { UnauthorizedErrorFilter } from './filters/unauthorized-error.filter';
+import { AuthAdapter } from './adapters/auth.adapter';
+
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule, {cors: true});
+
+  app.useGlobalFilters(new UnauthorizedErrorFilter()); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  app.useWebSocketAdapter(new AuthAdapter(app));
+
+  await app.listen(3000);
+}
+
+bootstrap();</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Use global filter <code>UnauthrizedErrorFilter</code></td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Afther doing that you are going to get a response similar to next one whenever there is an error:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="json" class="language-json hljs">{
+    "statusCode": 401,
+    "error": "invalid_token",
+    "message": "jwt expired"
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_authadapter">Add AuthAdapter</h3>
+<div class="paragraph">
+<p>Similarly to <code>auth.middleware.ts</code> websocket gateways need a middleware to handle authentication. However, we cannot add middlewares directly to websockets in <code>NestJs</code>. To do that we need to create first a websocket adapter and then create a middleware to handle websocket authentication. So create <code>auth.adapter.ts</code> file under <code>src/adapters</code> folder containing next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { IoAdapter } from '@nestjs/websockets';
+import { verify } from 'jsonwebtoken';
+import { Socket } from 'socket.io';
+import { environment } from '../environment';
+import { User } from '../models/user.model';
+
+export interface CustomSocket extends Socket { <i class="conum" data-value="1"></i><b>(1)</b>
+  user: User;
+}
+
+export class AuthAdapter extends IoAdapter {
+  createIOServer(port: number, options?: any): any {
+    const server = super.createIOServer(port, options);
+    server.use((socket: CustomSocket, next) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
+      if (socket.handshake.query &amp;&amp; socket.handshake.query.token) {
+        verify(socket.handshake.query.token, environment.JWT_SECRET_PASSWORD, (err, decoded) =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+          if (err) {
+            next(new Error('Authentication error')); <i class="conum" data-value="4"></i><b>(4)</b>
+          } else {
+            socket.user = decoded; <i class="conum" data-value="5"></i><b>(5)</b>
+            next();
+          }
+        });
+      } else {
+        next(new Error('Authentication error')); <i class="conum" data-value="6"></i><b>(6)</b>
+      }
+    });
+    return server;
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Creates the <code>CustomSocket</code> interface which allows us to stores the <code>decodedToken</code> object. This interface is not really needed because we could use <code>any</code> instead. However this will make easier to use the stored <code>decodedToken</code> variable in other classes.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Adds the middleware function to the websocket server.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Verifies the json-web-token and returns a callback function with error and decoded token parameters. Also uses <code>super-secret</code> as password for verification.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>If the token is expired or was not created with the private password it sends back an error with message <code>Authentication error</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>If the token is verified then we store the <code>decodedToken</code> into the <code>socket</code> instance to be used later for gateways.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>If the handshake query does not contains the token value then it sends an error with message <code>Authentication error</code>.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_modify_messagesgateway">Modify MessagesGateway</h3>
+<div class="paragraph">
+<p>After adding the <code>AuthAdapter</code>. we can modify the <code>messages.gateway.ts</code> file to make use of the stored <code>decodedToken</code>. So that, replace it with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
+import { ModelType } from 'typegoose';
+import { Message } from '../../models/message.model';
+import { User } from '../../models/user.model';
+import { Room } from '../../models/room.model';
+import { InjectModel } from 'nestjs-typegoose';
+import { CustomSocket } from '../../adapters/auth.adapter';
+
+@WebSocketGateway()
+export class MessagesGateway implements OnGatewayDisconnect {
+
+  constructor(@InjectModel(Message) private readonly messagesModel: ModelType&lt;Message&gt;,
+              @InjectModel(Room) private readonly roomsModel: ModelType&lt;Room&gt;,
+              @InjectModel(User) private readonly usersModel: ModelType&lt;User&gt;) {
+  }
+
+  async handleDisconnect(client: CustomSocket) { <i class="conum" data-value="1"></i><b>(1)</b>
+    client.server.emit('users-changed', {user: client.user.nickname, event: 'left'});
+  }
+
+  @SubscribeMessage('enter-chat-room') <i class="conum" data-value="3"></i><b>(3)</b>
+  async enterChatRoom(client: CustomSocket, roomId: string) {
+    client.join(roomId).to(roomId)
+      .emit('users-changed', {user: client.user.nickname, event: 'joined'}); <i class="conum" data-value="2"></i><b>(2)</b>
+  }
+
+  @SubscribeMessage('leave-chat-room') <i class="conum" data-value="3"></i><b>(3)</b>
+  async leaveChatRoom(client: CustomSocket, roomId: string) {
+    client.broadcast.to(roomId).emit('users-changed', {user: client.user.nickname, event: 'left'}); <i class="conum" data-value="3"></i><b>(3)</b>
+    client.leave(roomId);
+  }
+
+  @SubscribeMessage('add-message') <i class="conum" data-value="4"></i><b>(4)</b>
+  async addMessage(client: CustomSocket, message: Message) {
+    message.owner = client.user._id;
+    message.created = new Date();
+    message = (await this.messagesModel.create(message)).toJSON();
+    message.owner = {_id: client.user._id, nickname: client.user.nickname};
+    client.server.in(message.room as string).emit('message', message);
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Listen for client disconnection and emits the message <code>users-changed</code> containing the user nickname stored in the <code>decodedToken</code> attribute and the event <code>left</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Listen for client <code>enter-chat-room</code> and emits the message <code>users-changed</code> containing the user nickname stored in the <code>decodedToken</code> attribute and the event <code>joined</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Listen for client <code>leave-chat-room</code> and emits the message <code>users-changed</code> containing the user nickname stored in the <code>decodedToken</code> attribute and the event <code>left</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Listen for client <code>add-message</code>, then sets the <code>message.owner</code> using the <code>client.decodedToken._id</code> value. After that it save it to the <code>messages</code> collection in the database. Finally it sends back the created message to the clients connected tho the same room.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_ionic_application">Ionic Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>In the previous tutorial inside our Ionic chat app we modified the first screen, so after setting the nickname we go to another page where we select the chat room from a list, and then in the last screen we will only show messages for that specified chat room. In this tutorial we are going to modify the first screen and add a login form with username and password boxes. To do that, we are going to add a login page. After that we are going to create a sign-up page so users can be add themselves to our app.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Before continue with this part, in the console go to <code>chat-client</code> folder:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">cd chat-clent</code></pre>
+</div>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="sect2">
+<h3 id="_add_login_page">Add Login Page</h3>
+<div class="paragraph">
+<p>The first step will be to create the login page. To do that run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g page pages/login</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then modify the <code>login.page.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-login',
+  templateUrl: './login.page.html',
+  styleUrls: ['./login.page.scss'],
+})
+export class LoginPage implements OnInit {
+
+  credentials = { <i class="conum" data-value="1"></i><b>(1)</b>
+    nickname: '',
+    password: ''
+  };
+
+  constructor(public authSvc: AuthService) { } <i class="conum" data-value="2"></i><b>(2)</b>
+
+  ngOnInit() {
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Sets the initial values of <code>credential</code> model.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Injects the <code>AuthService</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>and the <code>login.page.html</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="html" class="language-html hljs">&lt;ion-content&gt;
+  &lt;ion-row justify-content-center&gt;
+    &lt;ion-col sizeXl="3" sizeLg="4" sizeMd="6" sizeSm="9" sizeXs="12"&gt;
+      &lt;ion-card&gt;
+        &lt;ion-card-content&gt;
+          &lt;form #f="ngForm" (submit)="authSvc.login(credentials)"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
+            &lt;ion-item&gt;
+              &lt;ion-label position="floating"&gt;Nickname:&lt;/ion-label&gt; <i class="conum" data-value="2"></i><b>(2)</b>
+              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" required minlength="5"&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item&gt;
+              &lt;ion-label position="floating"&gt;Password:&lt;/ion-label&gt; <i class="conum" data-value="3"></i><b>(3)</b>
+              &lt;ion-input type="password" name="password" [(ngModel)]="credentials.password" required minlength="6"&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;div padding&gt;
+              &lt;ion-button expand="full" type="submit" [disabled]="f.invalid"&gt;Login&lt;/ion-button&gt; <i class="conum" data-value="4"></i><b>(4)</b>
+              &lt;button hidden type="submit" [disabled]="f.invalid"&gt;&lt;/button&gt; <i class="conum" data-value="5"></i><b>(5)</b>
+              &lt;ion-button expand="full" routerLink="/sign-up" fill="clear"&gt;Sign Up&lt;/ion-button&gt; <i class="conum" data-value="6"></i><b>(6)</b>
+            &lt;/div&gt;
+          &lt;/form&gt;
+        &lt;/ion-card-content&gt;
+      &lt;/ion-card&gt;
+    &lt;/ion-col&gt;
+  &lt;/ion-row&gt;
+&lt;/ion-content&gt;</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Attaches the <code>ngForm</code> value to the <code>f</code> variable and add the listener for <code>submit</code> event to use the <code>authSvc.login</code> function.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Attaches the <code>credentials.nickname</code> model to the <code>nickname</code> input</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Attaches the <code>credentials.password</code> model to the <code>password</code> input</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Creates an <code>ion-button</code> of type <code>submit</code> this way it emits <code>submit</code> event every time is clicked.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Creates a hidden submit button to listen when the user hits enter on any of the inputs</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Creates a button that sends you to <code>sign-up</code> page whenever is clicked</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_signup_page">Add SignUp Page</h3>
+<div class="paragraph">
+<p>To add <code>sign-up</code> page we need to run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g page pages/sign-up</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then modify the <code>signup.pages.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Component, OnInit } from '@angular/core';
+import { AuthService } from '../../services/auth.service';
+
+@Component({
+  selector: 'app-sign-up',
+  templateUrl: './sign-up.page.html',
+  styleUrls: ['./sign-up.page.scss'],
+})
+export class SignUpPage implements OnInit {
+
+  credentials: any = {};
+
+  constructor(public authSvc: AuthService) { }
+
+  ngOnInit() {
+  }
+
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and modify <code>sign-up.page.html</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="html" class="language-html hljs">&lt;ion-content&gt;
+  &lt;ion-row justify-content-center&gt;
+    &lt;ion-col sizeXl="3" sizeLg="4" sizeMd="6" sizeSm="9" sizeXs="12"&gt;
+      &lt;ion-card&gt;
+        &lt;ion-card-content&gt;
+          &lt;form #f="ngForm" (submit)="authSvc.signUp(credentials)"&gt;
+            &lt;ion-item&gt;
+              &lt;ion-label position="floating"&gt;Nickname:&lt;/ion-label&gt;
+              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" required minlength="5"&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item&gt;
+              &lt;ion-label position="floating"&gt;Password:&lt;/ion-label&gt;
+              &lt;ion-input type="password" name="password" [(ngModel)]="credentials.password" #password="ngModel"
+                         required minlength="6"&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;ion-item&gt;
+              &lt;ion-label position="floating"&gt;Confirm Password:&lt;/ion-label&gt;
+              &lt;ion-input type="password" name="confirmPassword" [(ngModel)]="credentials.confirmPassword"
+                         [equalTo]="password" required minlength="6"&gt;&lt;/ion-input&gt;
+            &lt;/ion-item&gt;
+            &lt;div padding&gt;
+              &lt;ion-button expand="full" type="submit" [disabled]="f.invalid"&gt;Sign Up&lt;/ion-button&gt;
+              &lt;button hidden type="submit" [disabled]="f.invalid"&gt;&lt;/button&gt;
+              &lt;ion-button expand="full" routerLink="/login" fill="clear"&gt;Login&lt;/ion-button&gt;
+            &lt;/div&gt;
+          &lt;/form&gt;
+        &lt;/ion-card-content&gt;
+      &lt;/ion-card&gt;
+    &lt;/ion-col&gt;
+  &lt;/ion-row&gt;
+&lt;/ion-content&gt;</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_authservice">Add AuthService</h3>
+<div class="paragraph">
+<p>As you can see in previous code the <code>LoginPage</code> gets injected the <code>AuthService</code>. This service is going to be in charge of authentication logic. To create it run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g service services/auth</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify it with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { NavController, ToastController } from '@ionic/angular';
+import { environment } from '../../environments/environment';
+import { JwtHelperService } from '@auth0/angular-jwt';
+import { User } from '../models/user';
+import { LoggedInService } from './logged-in.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+
+  private _currentUser: User; <i class="conum" data-value="1"></i><b>(1)</b>
+
+  get currentUser(): User { <i class="conum" data-value="2"></i><b>(2)</b>
+    return this._currentUser = this._currentUser || this.jwtHelper.decodeToken();
+  }
+
+  constructor(private http: HttpClient,
+              private toastCtrl: ToastController,
+              private navCtrl: NavController,
+              private jwtHelper: JwtHelperService,
+              private loggedInSvc: LoggedInService) {} <i class="conum" data-value="3"></i><b>(3)</b>
+
+  login(credentials) { <i class="conum" data-value="4"></i><b>(4)</b>
+    this.http.post&lt;{token: string}&gt;(environment.apiUrl + 'auth/login', credentials).subscribe(({token}) =&gt; {
+      sessionStorage.setItem('user_token', token);
+      this.loggedInSvc.loggedIn$.next(true);
+      this.navCtrl.navigateRoot('/select-room');
+    });
+  }
+
+  logout() { <i class="conum" data-value="5"></i><b>(5)</b>
+    this.http.get(environment.apiUrl + 'auth/logout').subscribe(resp =&gt; {
+      sessionStorage.removeItem('user_token');
+      this.loggedInSvc.loggedIn$.next(false);
+      this.navCtrl.navigateRoot('/login');
+    });
+  }
+
+  signUp(credentials) { <i class="conum" data-value="6"></i><b>(6)</b>
+    this.http.post&lt;{token: string}&gt;(environment.apiUrl + 'auth/sign-up', credentials).subscribe(() =&gt; {
+      this.navCtrl.navigateRoot('/login');
+    });
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Variable used to memoize the current user value</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Gets current user value from the decoded json-web-token.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Injects services needed.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Creates a POST request that sends the credentials to the server. Once the response is received, it saves the <code>user_token</code> into the <code>sessionStorage</code>, emits the that the user has been logged in and navigates to <code>select-room</code> page.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Creates a GET request to the <code>auth/logout</code> api. Once the response is received, it removes the <code>user_token</code> from <code>sessionStorage</code>, emits <code>loggedIn = false</code>, and navigates to <code>login</code> page.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Creates a POST request that sends the credentials to the server. Once the response is received, it navigates to <code>login</code> page.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_loggedinservice">Add LoggedInService</h3>
+<div class="paragraph">
+<p>It will be needed to add a service that handles and shares the loggedIn status across the app. Then run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g service services/logged-in</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify it with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable } from '@angular/core';
+import { ReplaySubject } from 'rxjs';
+import { Socket } from 'ngx-socket-io';
+import { JwtHelperService } from '@auth0/angular-jwt';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class LoggedInService {
+
+  loggedIn$ = new ReplaySubject&lt;boolean&gt;(1); <i class="conum" data-value="1"></i><b>(1)</b>
+
+  constructor(socket: Socket, jwtHelper: JwtHelperService) {
+    this.loggedIn$.next(!jwtHelper.isTokenExpired()); <i class="conum" data-value="2"></i><b>(2)</b>
+
+    this.loggedIn$.subscribe(loggedIn =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+      if (loggedIn) {
+        socket.ioSocket.io.opts.query = {token: jwtHelper.tokenGetter()};
+        socket.connect();
+      } else {
+        socket.disconnect();
+        sessionStorage.removeItem('user_token');
+      }
+    });
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td><code>loggedIn$</code> subject will keep in memory the logged-in status. Also it will emit the new value whenever the user changes his status. Furthermore, we use a <code>ReplaySubject</code> so new subscribers always get the last value, this is useful for guards since they creates a new subscriber every time an url check occurs.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Checks if the token is not expired and emits the result to <code>loggedIn$</code> subject.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Subscribes to the <code>loggedIn$</code> subject. If the user is logged-in then it starts the websocket connection sending the token in the query parameter of the handshake query.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_auth0angular_jwt_package">Add @auth0/angular-jwt package</h3>
+<div class="paragraph">
+<p>Maybe the easiest way of handling authentication in any angular app is using the <code>@auth0/angular-jwt</code> package. This package creates an http interceptor and we will only need to add some small configurations parameters to the module to use it. Saying that the next step will be to run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">npm i -s @auth0/angular-jwt</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then you need to create a <code>tokenGetter</code> function in <code>app.module.ts</code>, so we will need to add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">export function tokenGetter() {
+  return sessionStorage.getItem('user_token');
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then add the <code>JwtModule</code> to the <code>AppModule</code>. To do it add next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">    JwtModule.forRoot({
+      config: {
+        tokenGetter,
+        whitelistedDomains: [environment.baseUrl],
+        blacklistedRoutes: ['/login', '/sign-up']
+      }
+    }),</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_isloggedinguard">Add IsLoggedInGuard</h3>
+<div class="paragraph">
+<p>This guard will be in charge of checking if the user can enter to certain routes if the user has logged in previously. If not then the user will be redirected to the login page. To do this run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g guard guards/is-logged-in</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then modify the <code>is-logged-in.guard.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable } from '@angular/core';
+import { CanActivate } from '@angular/router';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { NavController } from '@ionic/angular';
+import { LoggedInService } from '../services/logged-in.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class IsLoggedInGuard implements CanActivate {
+  constructor(private loggedInSvc: LoggedInService, private navCtrl: NavController) {}
+
+  canActivate(): Observable&lt;boolean&gt; {
+    return this.loggedInSvc.loggedIn$.pipe(tap(loggedIn =&gt; {
+      if (!loggedIn) {
+        this.navCtrl.navigateRoot('/login');
+      }
+    }));
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_isnotloggedinguard">Add IsNotLoggedInGuard</h3>
+<div class="paragraph">
+<p>This guard will be in charge of checking if the user can enter to certain routes if the user is not logged. If so then the user will be redirected to the <code>select-room</code> page. To do this run next command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g guard guards/is-not-logged-in</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then modify the <code>is-logged-in.guard.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable } from '@angular/core';
+import { CanActivate } from '@angular/router';
+import { Observable } from 'rxjs';
+import { NavController } from '@ionic/angular';
+import { LoggedInService } from '../services/logged-in.service';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class IsNotLoggedInGuard implements CanActivate {
+  constructor(private loggedInSvc: LoggedInService, private navCtrl: NavController) {}
+
+  canActivate(): Observable&lt;boolean&gt; {
+    return this.loggedInSvc.loggedIn$.map(loggedIn =&gt; {
+      if (loggedIn) {
+        this.navCtrl.navigateRoot('/select-room', {replaceUrl: true});
+      }
+      return !loggedIn;
+    });
+  }
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_change_approutingmodule">Change AppRoutingModule</h3>
+<div class="paragraph">
+<p>The next step will be to modify the <code>app-routing.module.ts</code> file with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { NgModule } from '@angular/core';
+import { RouterModule, Routes } from '@angular/router';
+import { IsLoggedInGuard } from './guards/is-logged-in.guard';
+import { IsNotLoggedInGuard } from './guards/is-not-logged-in.guard';
+
+const routes: Routes = [
+  {
+    path: '',
+    canActivate: [IsLoggedInGuard], <i class="conum" data-value="1"></i><b>(1)</b>
+    children: [
+      {path: '', redirectTo: 'select-room', pathMatch: 'full'},
+      {path: 'chat-room', loadChildren: './pages/chat-room/chat-room.module#ChatRoomPageModule'},
+      {path: 'select-room', loadChildren: './pages/select-room/select-room.module#SelectRoomPageModule'}
+    ]
+  },
+  {path: 'login', loadChildren: './pages/login/login.module#LoginPageModule', canActivate: [IsNotLoggedInGuard]}, <i class="conum" data-value="2"></i><b>(2)</b>
+  {path: 'sign-up', loadChildren: './pages/sign-up/sign-up.module#SignUpPageModule', canActivate: [IsNotLoggedInGuard]},
+];
+
+@NgModule({
+  imports: [RouterModule.forRoot(routes)],
+  exports: [RouterModule]
+})
+export class AppRoutingModule {}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Only users that have logged in previously can enter <code>chat-room</code> and <code>select-room</code> routes</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Only users that have not logged in can enter <code>login</code> and <code>sign-up</code> routes.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_add_httperrorsinterceptor">Add HttpErrorsInterceptor</h3>
+<div class="paragraph">
+<p>The final step will be to add an interceptor that handles all the errors produced by http requests. To do that run next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-none hljs">ionic g interceptor interceptors/http-errors</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then modify <code>http-errors.interceptors.ts</code> with next code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable } from '@angular/core';
+import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { catchError } from 'rxjs/operators';
+import { EMPTY, throwError } from 'rxjs';
+import { NavController, ToastController } from '@ionic/angular';
+import { LoggedInService } from '../services/logged-in.service';
+
+@Injectable()
+export class HttpErrorsInterceptor implements HttpInterceptor {
+  constructor(private navCtrl: NavController,
+              private toastCtrl: ToastController,
+              private loggedInSvc: LoggedInService) {}
+
+  intercept(req: HttpRequest&lt;any&gt;, next: HttpHandler): any {
+    return next.handle(req).pipe(catchError(async errorResp =&gt; {
+
+      const message = errorResp.error &amp;&amp; errorResp.error.message || errorResp.message;
+
+      (await this.toastCtrl.create({
+        message,
+        position: 'middle',
+        closeButtonText: 'Ok',
+        duration: 5000
+      })).present();
+
+      if (errorResp.status === 401) { <i class="conum" data-value="1"></i><b>(1)</b>
+        this.loggedInSvc.loggedIn$.next(false);
+        this.navCtrl.navigateRoot('/login');
+        return EMPTY;
+      }
+
+      return throwError(errorResp);
+    }));
+  }
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>if the error status is <code>401</code> then the user will be redirected to the login page.</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_conclusion">Conclusion</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>As you can see adding Authentication to our project was relatively simple. Furthermore, <code>express-jwt</code> give us the huge ability to handle the server-side authentication without writing too much code. As well as <code>@auth0/angular-jwt</code> give us great authentication module for angular to handle authentication in the client-side.</p>
+</div>
+<div class="paragraph">
+<p>Now this application has the ability to limit the pages that a users can enter if he has not logged in previously.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_comments">Comments</h2>
+<div class="sectionbody">
+<div id="disqus_thread"></div>
+<script>
+var disqus_config = function () {
+  this.page.url = 'https://nest-ionic-examples.github.io/03-chat-with-auth/';
+  this.page.identifier = '03-chat-with-auth';
+};
+
+(function() { // DON'T EDIT BELOW THIS LINE
+  var d = document, s = d.createElement('script');
+  s.src = 'https://03-chat-with-auth.disqus.com/embed.js';
+  s.setAttribute('data-timestamp', +new Date());
+  (d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+</div>
+</div>
+<link rel="stylesheet" href="./styles/github.min.css">
+<script src="./highlight.min.js"></script>
+<script>hljs.initHighlighting()</script>
+</body>
+</html>

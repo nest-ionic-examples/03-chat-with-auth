@@ -1,0 +1,24 @@
+version: '3.0'
+services:
+  mongo:
+    image: mongo
+    ports:
+      - 27017:27017 # <1>
+    volumes:
+      - ./docker-compose-files:/docker-entrypoint-initdb.d # <2>
+    environment:
+      MONGO_INITDB_DATABASE: chat # <3>
+  # tag::serve[]
+  serve: # <1>
+    image: node # <2>
+    depends_on: # <3>
+      - mongo
+    ports: # <4>
+      - 3000:3000
+    volumes: # <5>
+      - .:/app
+    working_dir: /app # <6>
+    command: bash -c "npm i && npm start" # <7>
+    environment: # <8>
+      NODE_ENV: local_docker
+  # end::serve[]

@@ -1,0 +1,83 @@
+{
+  "name": "chat-api",
+  "version": "0.0.0",
+  "description": "Chat Api",
+  "author": "Luis Vargas",
+  "license": "MIT",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.ts\"",
+    "start": "ts-node -r tsconfig-paths/register src/main.ts",
+    "start:dev": "nodemon",
+    "start:debug": "nodemon --config nodemon-debug.json",
+    "prestart:prod": "rimraf dist && tsc",
+    "start:prod": "node dist/main.js",
+    "start:hmr": "node dist/server",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:cov": "jest --coverage",
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "webpack": "webpack --config webpack.config.js",
+    "dc:start:mongo": "docker-compose up mongo",
+    "dc:down": "docker-compose down -v --remove-orphans",
+    "docker:stop:all": "docker stop $(docker ps -q)"
+  },
+  "dependencies": {
+    "@nestjs/common": "^5.7.4",
+    "@nestjs/core": "^5.7.4",
+    "@nestjs/websockets": "^5.7.4",
+    "bcrypt": "^3.0.4",
+    "cors": "^2.8.5",
+    "dotenv": "^6.2.0",
+    "express-jwt": "^5.3.1",
+    "hbs": "^4.0.3",
+    "jsonwebtoken": "^8.5.0",
+    "mongodb": "^3.1.13",
+    "mongoose": "^5.4.18",
+    "nestjs-typegoose": "^5.1.2",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^6.4.0",
+    "typegoose": "^5.6.0",
+    "typescript": "^3.3.3333"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^5.7.4",
+    "@types/bcrypt": "^3.0.0",
+    "@types/dotenv": "^6.1.0",
+    "@types/express": "^4.16.1",
+    "@types/express-jwt": "0.0.41",
+    "@types/jest": "^23.3.14",
+    "@types/jsonwebtoken": "^8.3.2",
+    "@types/mongoose": "^5.3.21",
+    "@types/node": "^10.12.30",
+    "@types/socket.io": "^1.4.40",
+    "@types/supertest": "^2.0.7",
+    "jest": "^24.4.0",
+    "nodemon": "^1.18.10",
+    "prettier": "^1.16.4",
+    "rimraf": "^2.6.3",
+    "supertest": "^3.4.2",
+    "ts-jest": "^23.10.5",
+    "ts-loader": "^4.4.2",
+    "ts-node": "^7.0.1",
+    "tsconfig-paths": "^3.8.0",
+    "tslint": "5.11.0",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.2.3",
+    "webpack-node-externals": "^1.7.2"
+  },
+  "jest": {
+    "moduleFileExtensions": [
+      "js",
+      "json",
+      "ts"
+    ],
+    "rootDir": "src",
+    "testRegex": ".spec.ts$",
+    "transform": {
+      "^.+\\.(t|j)s$": "ts-jest"
+    },
+    "coverageDirectory": "../coverage",
+    "testEnvironment": "node"
+  }
+}
