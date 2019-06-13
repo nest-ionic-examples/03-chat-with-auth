@@ -1,4 +1,4 @@
-import { IoAdapter } from '@nestjs/websockets';
+import { IoAdapter } from '@nestjs/platform-socket.io';
 import { verify } from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { environment } from '../environment';

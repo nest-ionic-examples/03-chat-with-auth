@@ -15,7 +15,7 @@ import { environment } from './environment';
 @Module({
   imports: [
     TypegooseModule.forRoot(environment.MONGO_DB_URL, {}),
-    TypegooseModule.forFeature(Message, Room, User),
+    TypegooseModule.forFeature([Message, Room, User]),
   ],
   controllers: [
     AppController,

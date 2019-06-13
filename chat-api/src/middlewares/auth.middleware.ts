@@ -1,4 +1,4 @@
-import { Injectable, MiddlewareFunction, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ModelType } from 'typegoose';
 import { User } from '../models/user.model';
@@ -9,10 +9,10 @@ import jwt = require('express-jwt');
 export class AuthMiddleware implements NestMiddleware {
   constructor(@InjectModel(User) private readonly userModel: ModelType<User>) {} // <1>
 
-  resolve(...args: any[]): MiddlewareFunction {
-    return jwt({ // <2>
+  use(req, res, next) {
+    jwt({ // <2>
       secret: environment.JWT_SECRET_PASSWORD, // <3>
-      isRevoked: async (req, payload, done) => { // <4>
+      isRevoked: async (req1, payload, done) => { // <4>
         if (!payload._id) {
           return done(new UnauthorizedException('The token contains invalid credentials or has expired'));
         }
@@ -22,6 +22,6 @@ export class AuthMiddleware implements NestMiddleware {
 
         done(null, false);
       },
-    }).unless({path: ['/api/auth/login', '/api/auth/sign-up']}); // <5>
+    }).unless({path: ['/api/auth/login', '/api/auth/sign-up']})(req, res, next); // <5>
   }
 }
