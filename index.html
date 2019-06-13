@@ -660,7 +660,7 @@ JWT_SECRET_PASSWORD=supper-secret</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable, MiddlewareFunction, NestMiddleware, UnauthorizedException } from '@nestjs/common';
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
 import { InjectModel } from 'nestjs-typegoose';
 import { ModelType } from 'typegoose';
 import { User } from '../models/user.model';
@@ -671,10 +671,10 @@ import jwt = require('express-jwt');
 export class AuthMiddleware implements NestMiddleware {
   constructor(@InjectModel(User) private readonly userModel: ModelType&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
 
-  resolve(...args: any[]): MiddlewareFunction {
-    return jwt({ <i class="conum" data-value="2"></i><b>(2)</b>
+  use(req, res, next) {
+    jwt({ <i class="conum" data-value="2"></i><b>(2)</b>
       secret: environment.JWT_SECRET_PASSWORD, <i class="conum" data-value="3"></i><b>(3)</b>
-      isRevoked: async (req, payload, done) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+      isRevoked: async (req1, payload, done) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
         if (!payload._id) {
           return done(new UnauthorizedException('The token contains invalid credentials or has expired'));
         }
@@ -684,7 +684,7 @@ export class AuthMiddleware implements NestMiddleware {
 
         done(null, false);
       },
-    }).unless({path: ['/api/auth/login', '/api/auth/sign-up']}); <i class="conum" data-value="5"></i><b>(5)</b>
+    }).unless({path: ['/api/auth/login', '/api/auth/sign-up']})(req, res, next); <i class="conum" data-value="5"></i><b>(5)</b>
   }
 }</code></pre>
 </div>
@@ -750,7 +750,7 @@ import { environment } from './environment';
 @Module({
   imports: [
     TypegooseModule.forRoot(environment.MONGO_DB_URL, {}),
-    TypegooseModule.forFeature(Message, Room, User),
+    TypegooseModule.forFeature([Message, Room, User]),
   ],
   controllers: [
     AppController,
@@ -1087,7 +1087,7 @@ bootstrap();</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { IoAdapter } from '@nestjs/websockets';
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { IoAdapter } from '@nestjs/platform-socket.io';
 import { verify } from 'jsonwebtoken';
 import { Socket } from 'socket.io';
 import { environment } from '../environment';
