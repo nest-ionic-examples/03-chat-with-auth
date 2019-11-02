@@ -35,7 +35,7 @@
     "hbs": "^4.0.4",
     "jsonwebtoken": "^8.5.1",
     "mongodb": "^3.2.7",
-    "mongoose": "^5.5.15",
+    "mongoose": "^5.7.5",
     "nestjs-typegoose": "^5.2.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^6.5.2",
