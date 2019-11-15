@@ -12,7 +12,7 @@
               <ion-label position="floating">Password:</ion-label> <!--3-->
               <ion-input type="password" name="password" [(ngModel)]="credentials.password" required minlength="6"></ion-input>
             </ion-item>
-            <div padding>
+            <div class="ion-padding">
               <ion-button expand="full" type="submit" [disabled]="f.invalid">Login</ion-button> <!--4-->
               <button hidden type="submit" [disabled]="f.invalid"></button> <!--5-->
               <ion-button expand="full" routerLink="/sign-up" fill="clear">Sign Up</ion-button> <!--6-->

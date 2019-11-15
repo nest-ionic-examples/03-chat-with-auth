@@ -9,12 +9,12 @@ const routes: Routes = [
     canActivate: [IsLoggedInGuard], // <1>
     children: [
       {path: '', redirectTo: 'select-room', pathMatch: 'full'},
-      {path: 'chat-room', loadChildren: './pages/chat-room/chat-room.module#ChatRoomPageModule'},
-      {path: 'select-room', loadChildren: './pages/select-room/select-room.module#SelectRoomPageModule'}
+      {path: 'chat-room', loadChildren: () => import('./pages/chat-room/chat-room.module').then(m => m.ChatRoomPageModule)},
+      {path: 'select-room', loadChildren: () => import('./pages/select-room/select-room.module').then(m => m.SelectRoomPageModule)}
     ]
   },
-  {path: 'login', loadChildren: './pages/login/login.module#LoginPageModule', canActivate: [IsNotLoggedInGuard]}, // <2>
-  {path: 'sign-up', loadChildren: './pages/sign-up/sign-up.module#SignUpPageModule', canActivate: [IsNotLoggedInGuard]},
+  {path: 'login', loadChildren: () => import('./pages/login/login.module').then(m => m.LoginPageModule), canActivate: [IsNotLoggedInGuard]}, // <2>
+  {path: 'sign-up', loadChildren: () => import('./pages/sign-up/sign-up.module').then(m => m.SignUpPageModule), canActivate: [IsNotLoggedInGuard]},
 ];
 
 @NgModule({

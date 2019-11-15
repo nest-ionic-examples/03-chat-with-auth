@@ -12,7 +12,7 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content padding>
+<ion-content class="ion-padding">
   <ion-list>
     <ion-item *ngFor="let room of rooms" (click)="joinRoom(room)"> <!--2-->
       <ion-label>{{room.name}}</ion-label>

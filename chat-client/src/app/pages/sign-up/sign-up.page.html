@@ -18,7 +18,7 @@
               <ion-input type="password" name="confirmPassword" [(ngModel)]="credentials.confirmPassword"
                          [equalTo]="password" required minlength="6"></ion-input>
             </ion-item>
-            <div padding>
+            <div class="ion-padding">
               <ion-button expand="full" type="submit" [disabled]="f.invalid">Sign Up</ion-button>
               <button hidden type="submit" [disabled]="f.invalid"></button>
               <ion-button expand="full" routerLink="/login" fill="clear">Login</ion-button>
