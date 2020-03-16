@@ -892,24 +892,24 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@ionic-native/core@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/core/-/core-5.16.0.tgz#1258f5ab7948c28d704ff07570909320fa98aa16"
-  integrity sha512-eSneljn24ZCeDssoAusvEP7y7CjIw9pfH1ahtL7Q+gyMZzmFsU6R2RJ6QLmRqjxNO/6EqfjxsSEJ7JZO3qxvSQ==
+"@ionic-native/core@^5.8.0":
+  version "5.22.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/core/-/core-5.22.0.tgz#4ecd16ee33dd83d80ec48eec2743b3f10202202e"
+  integrity sha512-zX4EUDDDkCBtZVmu00V+SVbpuqDGhxe0Fri75neAjsG1oHvP3l470EOGHJgLW5edJtIcStlqvDE49RUcwT4mlA==
   dependencies:
     "@types/cordova" latest
 
-"@ionic-native/splash-screen@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/splash-screen/-/splash-screen-5.16.0.tgz#9d01a39e762b1bab78fe49fad179e86654d349a0"
-  integrity sha512-Fd2sUcjJrS+kcrbwfLBoez+8uU9ab/QePBDFlEtN55ac4xRtL2RgPfhuamYC0WhTl6D3YjWMXPQ1D5sHAQ6Kdw==
+"@ionic-native/splash-screen@^5.8.0":
+  version "5.22.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/splash-screen/-/splash-screen-5.22.0.tgz#2c5bb7b94ba027194779f6ea369cb034b597f396"
+  integrity sha512-cJC93eCsxYAhC9kn4GMA09pbCcpihiKXhMedelkUpeeBa2w0QBG0RiCIUFQ8G4G963vT991gxzwQO625xoCekQ==
   dependencies:
     "@types/cordova" latest
 
-"@ionic-native/status-bar@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/status-bar/-/status-bar-5.16.0.tgz#1bd61b8e9db3918029b8e1a5b8fd65683704f7a3"
-  integrity sha512-3zWugj+T+EouY2wbTq+bSuzCwO4i4Iyto7VTCGKyjVEG9kZovOoIJ2PN9ZEI31x8zldE3VCiqNmUtNuc8v52Og==
+"@ionic-native/status-bar@^5.8.0":
+  version "5.22.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/status-bar/-/status-bar-5.22.0.tgz#0d499886557216ba4b406b53aa4f8501fceb4490"
+  integrity sha512-CVb/HjNZdYMmUHK/H2q1uo6uIt+KOG/NnOgn4jUNTiw5XiGWvT+hqrMNTBrRk1nG573ky5OhW0f0oe+GqWaxOg==
   dependencies:
     "@types/cordova" latest
 
@@ -1238,9 +1238,9 @@ accepts@~1.3.4, accepts@~1.3.5, accepts@~1.3.7:
     negotiator "0.6.2"
 
 acorn@^6.2.1:
-  version "6.3.0"
-  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.3.0.tgz#0087509119ffa4fc0a0041d1e93a417e68cb856e"
-  integrity sha512-/czfa8BwS88b9gWQVhc8eknunSA2DoJpJyTQkhheIf5E48u1N0R4q/YxxsAeqRrmK9TQ/uYfgLDfZo91UlANIA==
+  version "6.4.1"
+  resolved "https://registry.yarnpkg.com/acorn/-/acorn-6.4.1.tgz#531e58ba3f51b9dacb9a6646ca4debf5b14ca474"
+  integrity sha512-ZVA9k326Nwrj3Cj9jlh3wGFutC2ZornPNARZwsNYqQYgN0EsV2d53w5RN/co65Ohn4sUAUtb1rSUAOD6XN9idA==
 
 adm-zip@^0.4.9:
   version "0.4.13"
