@@ -892,24 +892,24 @@
     lodash "^4.17.13"
     to-fast-properties "^2.0.0"
 
-"@ionic-native/core@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/core/-/core-5.16.0.tgz#1258f5ab7948c28d704ff07570909320fa98aa16"
-  integrity sha512-eSneljn24ZCeDssoAusvEP7y7CjIw9pfH1ahtL7Q+gyMZzmFsU6R2RJ6QLmRqjxNO/6EqfjxsSEJ7JZO3qxvSQ==
+"@ionic-native/core@^5.8.0":
+  version "5.26.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/core/-/core-5.26.0.tgz#ba1fc73c4fcc4419e08dc6ed06df48eabad0f56f"
+  integrity sha512-o+JtcoHD32aRxowL+1xEnEwH18ma45KyNtdCxgTCSCH5RgxVQrWWIyhKeOamUtXlIpfOV559VOmegr2Y9e5KYQ==
   dependencies:
     "@types/cordova" latest
 
-"@ionic-native/splash-screen@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/splash-screen/-/splash-screen-5.16.0.tgz#9d01a39e762b1bab78fe49fad179e86654d349a0"
-  integrity sha512-Fd2sUcjJrS+kcrbwfLBoez+8uU9ab/QePBDFlEtN55ac4xRtL2RgPfhuamYC0WhTl6D3YjWMXPQ1D5sHAQ6Kdw==
+"@ionic-native/splash-screen@^5.8.0":
+  version "5.26.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/splash-screen/-/splash-screen-5.26.0.tgz#4dde62ae9067f5b4862bf3fa6f6b0bafbbad850b"
+  integrity sha512-l6SNuaD38nprBZ/JbpBpcIl4EMZYEgNufcT5/n2FiLOpQ91heCQ4XSim7+DDhUvTkDm8+jBIX3Nv+GnYvpkb0g==
   dependencies:
     "@types/cordova" latest
 
-"@ionic-native/status-bar@^5.0.0":
-  version "5.16.0"
-  resolved "https://registry.yarnpkg.com/@ionic-native/status-bar/-/status-bar-5.16.0.tgz#1bd61b8e9db3918029b8e1a5b8fd65683704f7a3"
-  integrity sha512-3zWugj+T+EouY2wbTq+bSuzCwO4i4Iyto7VTCGKyjVEG9kZovOoIJ2PN9ZEI31x8zldE3VCiqNmUtNuc8v52Og==
+"@ionic-native/status-bar@^5.8.0":
+  version "5.26.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/status-bar/-/status-bar-5.26.0.tgz#a9c899baab8ee2ae5cbeabb9c982f772c959ef0a"
+  integrity sha512-9lWP4D6AzAmVL74XY8bqRdmC+H1lC1XXDpifWgjKWJ03IKjdn3joZEe0ofAuVS3g+F8GY8v3Bv2dU0wzxPDswA==
   dependencies:
     "@types/cordova" latest
 
@@ -8448,9 +8448,9 @@ websocket-driver@>=0.5.1:
     websocket-extensions ">=0.1.1"
 
 websocket-extensions@>=0.1.1:
-  version "0.1.3"
-  resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.3.tgz#5d2ff22977003ec687a4b87073dfbbac146ccf29"
-  integrity sha512-nqHUnMXmBzT0w570r2JpJxfiSD1IzoI+HGVdd3aZ0yNi3ngvQ4jv1dtHt5VGxfI2yj5yqImPhOK4vmIh2xMbGg==
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/websocket-extensions/-/websocket-extensions-0.1.4.tgz#7f8473bc839dfd87608adb95d7eb075211578a42"
+  integrity sha512-OqedPIGOfsDlo31UNwYbCFMSaO9m9G/0faIHj5/dZFDMFqPTcx6UwqyOy3COEaEOg/9VsGIpdqn62W5KhoKSpg==
 
 when@~3.6.x:
   version "3.6.4"
