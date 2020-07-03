@@ -12,6 +12,7 @@ export class AuthMiddleware implements NestMiddleware {
   use(req, res, next) {
     jwt({ // <2>
       secret: environment.JWT_SECRET_PASSWORD, // <3>
+      algorithms: ['HS256'],
       isRevoked: async (req1, payload, done) => { // <4>
         if (!payload._id) {
           return done(new UnauthorizedException('The token contains invalid credentials or has expired'));

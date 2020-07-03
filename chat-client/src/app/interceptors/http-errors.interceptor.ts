@@ -19,7 +19,7 @@ export class HttpErrorsInterceptor implements HttpInterceptor {
       (await this.toastCtrl.create({
         message,
         position: 'middle',
-        closeButtonText: 'Ok',
+        buttons: [{text: 'Ok'}],
         duration: 5000
       })).present();
 

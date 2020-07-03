@@ -8,8 +8,6 @@ export class UnauthorizedErrorFilter implements ExceptionFilter {
     const response = ctx.getResponse();
     const status = exception.status;
 
-    console.log('exception.message: ', exception.message);
-
     response
       .status(status)
       .json({

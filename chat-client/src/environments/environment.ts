@@ -5,10 +5,6 @@
 // tag::environment-variable[]
 export const environment = {
   production: false,
-  socketIoConfig: {
-    url: 'localhost:3000',
-    options: {}
-  },
   baseUrl: 'localhost:3000', // <1>
   apiUrl: 'http://localhost:3000/api/'
 };

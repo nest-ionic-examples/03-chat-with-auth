@@ -23,7 +23,9 @@ export class AuthController {
 
     await user.save();
 
-    return {token: sign({_id: user._id, nickname: user.nickname}, environment.JWT_SECRET_PASSWORD, {expiresIn: '1h'})};
+    return {token: sign({_id: user._id, nickname: user.nickname},
+        environment.JWT_SECRET_PASSWORD,
+        {expiresIn: '1h', algorithm: 'HS256'})};
   }
 
   @Get('logout')
@@ -33,9 +35,9 @@ export class AuthController {
   }
 
   @Post('sign-up')
-  async signup(@Body() signupCredentials) { // <4>
-    signupCredentials.password = await hash(signupCredentials.password, 10);
-    await this.userModel.create(signupCredentials);
+  async signUp(@Body() signUpCredentials) { // <4>
+    signUpCredentials.password = await hash(signUpCredentials.password, 10);
+    await this.userModel.create(signUpCredentials);
     return {message: 'User Created Successfully'};
   }
 }
