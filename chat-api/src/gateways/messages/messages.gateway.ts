@@ -1,26 +1,31 @@
-import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { ModelType } from 'typegoose';
+import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Model } from 'mongoose';
 import { Message } from '../../models/message.model';
 import { User } from '../../models/user.model';
 import { Room } from '../../models/room.model';
-import { InjectModel } from 'nestjs-typegoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { CustomSocket } from '../../adapters/auth.adapter';
+import { Server } from 'socket.io';
 
 @WebSocketGateway()
 export class MessagesGateway implements OnGatewayDisconnect {
 
-  constructor(@InjectModel(Message) private readonly messagesModel: ModelType<Message>,
-              @InjectModel(Room) private readonly roomsModel: ModelType<Room>,
-              @InjectModel(User) private readonly usersModel: ModelType<User>) {
+  constructor(@InjectModel(Message.name) private readonly messagesModel: Model<Message>,
+              @InjectModel(Room.name) private readonly roomsModel: Model<Room>,
+              @InjectModel(User.name) private readonly usersModel: Model<User>) {
   }
 
+  @WebSocketServer()
+  server: Server;
+
   async handleDisconnect(client: CustomSocket) { // <1>
-    client.server.emit('users-changed', {user: client.user.nickname, event: 'left'});
+    this.server.emit('users-changed', {user: client.user.nickname, event: 'left'});
   }
 
   @SubscribeMessage('enter-chat-room') // <3>
   async enterChatRoom(client: CustomSocket, roomId: string) {
-    client.join(roomId).to(roomId)
+    client.join(roomId);
+    client.broadcast.to(roomId)
       .emit('users-changed', {user: client.user.nickname, event: 'joined'}); // <2>
   }
 
@@ -34,8 +39,8 @@ export class MessagesGateway implements OnGatewayDisconnect {
   async addMessage(client: CustomSocket, message: Message) {
     message.owner = client.user._id;
     message.created = new Date();
-    message = (await this.messagesModel.create(message)).toJSON();
-    message.owner = {_id: client.user._id, nickname: client.user.nickname};
-    client.server.in(message.room as string).emit('message', message);
+    message = await this.messagesModel.create(message);
+    message.owner = {_id: client.user._id, nickname: client.user.nickname} as User;
+    this.server.in(message.room as string).emit('message', message);
   }
 }

@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../../models/user.model';
-import { ModelType } from 'typegoose';
+import { Model } from 'mongoose';
 import { sign } from 'jsonwebtoken';
 import { compare, hash } from 'bcrypt';
 import { CurrentUser } from '../../decorators/current-user.decorator';
@@ -9,7 +9,7 @@ import { environment } from '../../environment';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(@InjectModel(User) private readonly userModel: ModelType<User>) {} // <1>
+  constructor(@InjectModel(User.name) private readonly userModel: Model<User>) {} // <1>
 
   @Post('login')
   async login(@Body() credentials) { // <2>
@@ -28,7 +28,7 @@ export class AuthController {
         {expiresIn: '1h', algorithm: 'HS256'})};
   }
 
-  @Get('logout')
+  @Post('logout')
   async logout(@CurrentUser() user) { // <3>
     await this.userModel.findByIdAndUpdate(user._id, {loggedIn: false});
     return {message: 'Logout Successfully'};

@@ -1,7 +1,5 @@
 == Nest Application
 
-=== Database Setup
-
 In this section we are going to add authentication and authorization support to our `chat-api` server.
 
 [NOTE]

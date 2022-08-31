@@ -4,18 +4,22 @@ import { AppService } from './app.service';
 import { MessagesGateway } from './gateways/messages/messages.gateway';
 import { MessagesController } from './controllers/messages/messages.controller';
 import { RoomsController } from './controllers/rooms/rooms.controller';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { Message } from './models/message.model';
-import { Room } from './models/room.model';
-import { User } from './models/user.model';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Message, MessageSchema } from './models/message.model';
+import { Room, RoomSchema } from './models/room.model';
+import { User, UserSchema } from './models/user.model';
 import { AuthController } from './controllers/auth/auth.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { environment } from './environment';
 
 @Module({
   imports: [
-    TypegooseModule.forRoot(environment.MONGO_DB_URL, {}),
-    TypegooseModule.forFeature([Message, Room, User]),
+    MongooseModule.forRoot(environment.MONGO_DB_URL, {}),
+    MongooseModule.forFeature([
+      { name: Message.name, schema: MessageSchema },
+      { name: Room.name, schema: RoomSchema },
+      { name: User.name, schema: UserSchema },
+    ]),
   ],
   controllers: [
     AppController,

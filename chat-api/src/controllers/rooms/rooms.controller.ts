@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post, Query } from '@nestjs/common';
 import { Room } from '../../models/room.model';
-import { ModelType } from 'typegoose';
-import { InjectModel } from 'nestjs-typegoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 
 @Controller('api/rooms')
 export class RoomsController {
-  constructor(@InjectModel(Room) private readonly model: ModelType<Room>) {} // <1>
+  constructor(@InjectModel(Room.name) private readonly model: Model<Room>) {} // <1>
 
   @Get()
   find(@Query('q') q) { // <2>

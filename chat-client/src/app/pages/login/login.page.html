@@ -1,16 +1,16 @@
 <ion-content>
-  <ion-row justify-content-center>
+  <ion-row class="ion-justify-content-center">
     <ion-col sizeXl="3" sizeLg="4" sizeMd="6" sizeSm="9" sizeXs="12">
       <ion-card>
         <ion-card-content>
           <form #f="ngForm" (submit)="authSvc.login(credentials)"> <!--1-->
             <ion-item>
               <ion-label position="floating">Nickname:</ion-label> <!--2-->
-              <ion-input name="nickname" [(ngModel)]="credentials.nickname" required minlength="5"></ion-input>
+              <ion-input name="nickname" [(ngModel)]="credentials.nickname" [required]="true" minlength="5"></ion-input>
             </ion-item>
             <ion-item>
               <ion-label position="floating">Password:</ion-label> <!--3-->
-              <ion-input type="password" name="password" [(ngModel)]="credentials.password" required minlength="6"></ion-input>
+              <ion-input type="password" name="password" [(ngModel)]="credentials.password" [required]="true" minlength="6"></ion-input>
             </ion-item>
             <div class="ion-padding">
               <ion-button expand="full" type="submit" [disabled]="f.invalid">Login</ion-button> <!--4-->

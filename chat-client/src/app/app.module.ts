@@ -32,8 +32,8 @@ export function tokenGetter() {
     JwtModule.forRoot({
       config: {
         tokenGetter,
-        whitelistedDomains: [environment.baseUrl],
-        blacklistedRoutes: ['/login', '/sign-up']
+        allowedDomains: [environment.baseUrl],
+        disallowedRoutes: ['/login', '/sign-up']
       }
     }),
     // end::jwt-module[]

@@ -32,7 +32,7 @@ export class AuthService {
   }
 
   logout() { // <5>
-    this.http.get(environment.apiUrl + 'auth/logout').subscribe(resp => {
+    this.http.post(environment.apiUrl + 'auth/logout', null).subscribe(resp => {
       sessionStorage.removeItem('user_token');
       this.loggedInSvc.loggedIn$.next(false);
       this.navCtrl.navigateRoot('/login');

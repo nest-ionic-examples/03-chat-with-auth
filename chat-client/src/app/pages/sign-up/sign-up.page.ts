@@ -8,7 +8,11 @@ import { AuthService } from '../../services/auth.service';
 })
 export class SignUpPage implements OnInit {
 
-  credentials: any = {};
+  credentials: {
+    nickname?: string,
+    password?: string,
+    confirmPassword?: string
+  } = {};
 
   constructor(public authSvc: AuthService) { }
 

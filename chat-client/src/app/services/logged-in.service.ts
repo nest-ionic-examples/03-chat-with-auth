@@ -16,6 +16,7 @@ export class LoggedInService {
     this.loggedIn$.subscribe(loggedIn => { // <3>
       if (loggedIn) {
         socket.ioSocket.io.opts.query = {token: jwtHelper.tokenGetter()};
+        console.log('socket.ioSocket.io.opts.query: ', socket.ioSocket.io.opts.query)
         socket.connect();
       } else {
         socket.disconnect();

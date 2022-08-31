@@ -445,7 +445,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <ul class="sectlevel1">
 <li><a href="#_nest_application">Nest Application</a>
 <ul class="sectlevel2">
-<li><a href="#_database_setup">Database Setup</a></li>
 <li><a href="#_add_required_libraries">Add Required Libraries</a></li>
 <li><a href="#_create_environment_files">Create Environment files</a></li>
 <li><a href="#_add_authmiddleware">Add AuthMiddleware</a></li>
@@ -498,8 +497,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect1">
 <h2 id="_nest_application">Nest Application</h2>
 <div class="sectionbody">
-<div class="sect2">
-<h3 id="_database_setup">Database Setup</h3>
 <div class="paragraph">
 <p>In this section we are going to add authentication and authorization support to our <code>chat-api</code> server.</p>
 </div>
@@ -521,7 +518,6 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 </td>
 </tr>
 </table>
-</div>
 </div>
 <div class="sect2">
 <h3 id="_add_required_libraries">Add Required Libraries</h3>
@@ -662,29 +658,31 @@ JWT_SECRET_PASSWORD=supper-secret</code></pre>
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Injectable, NestMiddleware, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
-import { ModelType } from 'typegoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { User } from '../models/user.model';
 import { environment } from '../environment';
-import jwt = require('express-jwt');
+import { expressjwt } from 'express-jwt';
+import { JwtPayload } from 'jsonwebtoken';
 
 @Injectable()
 export class AuthMiddleware implements NestMiddleware {
-  constructor(@InjectModel(User) private readonly userModel: ModelType&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
+  constructor(@InjectModel(User.name) private readonly userModel: Model&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
 
   use(req, res, next) {
-    jwt({ <i class="conum" data-value="2"></i><b>(2)</b>
+    expressjwt({ <i class="conum" data-value="2"></i><b>(2)</b>
       secret: environment.JWT_SECRET_PASSWORD, <i class="conum" data-value="3"></i><b>(3)</b>
       algorithms: ['HS256'],
-      isRevoked: async (req1, payload, done) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+      isRevoked: async (req1, token) =&gt; { <i class="conum" data-value="4"></i><b>(4)</b>
+        const payload = token?.payload as JwtPayload;
         if (!payload._id) {
-          return done(new UnauthorizedException('The token contains invalid credentials or has expired'));
+          throw new UnauthorizedException('The token contains invalid credentials or has expired');
         }
 
         const user = await this.userModel.findById(payload._id).exec();
-        if (!user || !user.loggedIn) return done(new UnauthorizedException('The user has been logged out'));
+        if (!user || !user.loggedIn) throw new UnauthorizedException('The user has been logged out');
 
-        done(null, false);
+        return false;
       },
     }).unless({path: ['/api/auth/login', '/api/auth/sign-up']})(req, res, next); <i class="conum" data-value="5"></i><b>(5)</b>
   }
@@ -741,18 +739,22 @@ import { AppService } from './app.service';
 import { MessagesGateway } from './gateways/messages/messages.gateway';
 import { MessagesController } from './controllers/messages/messages.controller';
 import { RoomsController } from './controllers/rooms/rooms.controller';
-import { TypegooseModule } from 'nestjs-typegoose';
-import { Message } from './models/message.model';
-import { Room } from './models/room.model';
-import { User } from './models/user.model';
+import { MongooseModule } from '@nestjs/mongoose';
+import { Message, MessageSchema } from './models/message.model';
+import { Room, RoomSchema } from './models/room.model';
+import { User, UserSchema } from './models/user.model';
 import { AuthController } from './controllers/auth/auth.controller';
 import { AuthMiddleware } from './middlewares/auth.middleware';
 import { environment } from './environment';
 
 @Module({
   imports: [
-    TypegooseModule.forRoot(environment.MONGO_DB_URL, {}),
-    TypegooseModule.forFeature([Message, Room, User]),
+    MongooseModule.forRoot(environment.MONGO_DB_URL, {}),
+    MongooseModule.forFeature([
+      { name: Message.name, schema: MessageSchema },
+      { name: Room.name, schema: RoomSchema },
+      { name: User.name, schema: UserSchema },
+    ]),
   ],
   controllers: [
     AppController,
@@ -789,32 +791,38 @@ export class AppModule implements NestModule {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Message } from './message.model';
-import { Room } from './room.model';
-import { pre, prop, Ref, Typegoose } from 'typegoose';
-import { ObjectID } from 'bson';
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import {Message} from './message.model';
+import {Room} from './room.model';
+import {ObjectID} from 'bson';
+import {Types} from "mongoose";
+import {Prop, Schema, SchemaFactory} from "@nestjs/mongoose";
 
-export class User extends Typegoose {
-  _id: ObjectID | string;
+@Schema()
+export class User {
+  _id?: ObjectID | string;
 
-  @prop({
+  @Prop({
     required: true,
     maxlength: 20,
     minlength: 5,
-    unique: true, <i class="conum" data-value="1"></i><b>(1)</b>
+    unique: true <i class="conum" data-value="1"></i><b>(1)</b>
   })
   nickname: string;
 
-  @prop({required: true})
+  @Prop({required: true})
   password: string; <i class="conum" data-value="2"></i><b>(2)</b>
 
-  @prop()
+  @Prop()
   loggedIn: boolean; <i class="conum" data-value="3"></i><b>(3)</b>
 
-  messages: Ref&lt;Message&gt;[];
+  @Prop({type: [{type: Types.ObjectId, ref: 'Message'}]})
+  messages?: Message[];
 
-  joinedRooms: Ref&lt;Room&gt;[];
-}</code></pre>
+  @Prop({type: [{type: Types.ObjectId, ref: 'Room'}]})
+  joinedRooms?: Room[];
+}
+
+export const UserSchema = SchemaFactory.createForClass(User)</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -878,7 +886,8 @@ export class SomeController {
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { createParamDecorator, ExecutionContext } from '@nestjs/common';
 
-export const CurrentUser = createParamDecorator((data, ctx: ExecutionContext) =&gt; ctx.switchToHttp().getRequest().user);</code></pre>
+export const CurrentUser = createParamDecorator((data, ctx: ExecutionContext) =&gt;
+  ctx.switchToHttp().getRequest().auth);</code></pre>
 </div>
 </div>
 </div>
@@ -898,9 +907,9 @@ export const CurrentUser = createParamDecorator((data, ctx: ExecutionContext) =&
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { Body, Controller, Get, Post, Req, UnauthorizedException } from '@nestjs/common';
-import { InjectModel } from 'nestjs-typegoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { User } from '../../models/user.model';
-import { ModelType } from 'typegoose';
+import { Model } from 'mongoose';
 import { sign } from 'jsonwebtoken';
 import { compare, hash } from 'bcrypt';
 import { CurrentUser } from '../../decorators/current-user.decorator';
@@ -908,7 +917,7 @@ import { environment } from '../../environment';
 
 @Controller('api/auth')
 export class AuthController {
-  constructor(@InjectModel(User) private readonly userModel: ModelType&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
+  constructor(@InjectModel(User.name) private readonly userModel: Model&lt;User&gt;) {} <i class="conum" data-value="1"></i><b>(1)</b>
 
   @Post('login')
   async login(@Body() credentials) { <i class="conum" data-value="2"></i><b>(2)</b>
@@ -927,7 +936,7 @@ export class AuthController {
         {expiresIn: '1h', algorithm: 'HS256'})};
   }
 
-  @Get('logout')
+  @Post('logout')
   async logout(@CurrentUser() user) { <i class="conum" data-value="3"></i><b>(3)</b>
     await this.userModel.findByIdAndUpdate(user._id, {loggedIn: false});
     return {message: 'Logout Successfully'};
@@ -1101,14 +1110,14 @@ export interface CustomSocket extends Socket { <i class="conum" data-value="1"><
 
 export class AuthAdapter extends IoAdapter {
   createIOServer(port: number, options?: any): any {
-    const server = super.createIOServer(port, options);
+    const server = super.createIOServer(port, {...options, cors: true});
     server.use((socket: CustomSocket, next) =&gt; { <i class="conum" data-value="2"></i><b>(2)</b>
       if (socket.handshake.query &amp;&amp; socket.handshake.query.token) {
-        verify(socket.handshake.query.token, environment.JWT_SECRET_PASSWORD, (err, decoded) =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
+        verify(socket.handshake.query.token as string, environment.JWT_SECRET_PASSWORD, (err, decoded) =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
           if (err) {
             next(new Error('Authentication error')); <i class="conum" data-value="4"></i><b>(4)</b>
           } else {
-            socket.user = decoded; <i class="conum" data-value="5"></i><b>(5)</b>
+            socket.user = decoded as User; <i class="conum" data-value="5"></i><b>(5)</b>
             next();
           }
         });
@@ -1157,29 +1166,34 @@ export class AuthAdapter extends IoAdapter {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway } from '@nestjs/websockets';
-import { ModelType } from 'typegoose';
+<pre class="highlightjs highlight nowrap"><code data-lang="ts" class="language-ts hljs">import { OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from '@nestjs/websockets';
+import { Model } from 'mongoose';
 import { Message } from '../../models/message.model';
 import { User } from '../../models/user.model';
 import { Room } from '../../models/room.model';
-import { InjectModel } from 'nestjs-typegoose';
+import { InjectModel } from '@nestjs/mongoose';
 import { CustomSocket } from '../../adapters/auth.adapter';
+import { Server } from 'socket.io';
 
 @WebSocketGateway()
 export class MessagesGateway implements OnGatewayDisconnect {
 
-  constructor(@InjectModel(Message) private readonly messagesModel: ModelType&lt;Message&gt;,
-              @InjectModel(Room) private readonly roomsModel: ModelType&lt;Room&gt;,
-              @InjectModel(User) private readonly usersModel: ModelType&lt;User&gt;) {
+  constructor(@InjectModel(Message.name) private readonly messagesModel: Model&lt;Message&gt;,
+              @InjectModel(Room.name) private readonly roomsModel: Model&lt;Room&gt;,
+              @InjectModel(User.name) private readonly usersModel: Model&lt;User&gt;) {
   }
 
+  @WebSocketServer()
+  server: Server;
+
   async handleDisconnect(client: CustomSocket) { <i class="conum" data-value="1"></i><b>(1)</b>
-    client.server.emit('users-changed', {user: client.user.nickname, event: 'left'});
+    this.server.emit('users-changed', {user: client.user.nickname, event: 'left'});
   }
 
   @SubscribeMessage('enter-chat-room') <i class="conum" data-value="3"></i><b>(3)</b>
   async enterChatRoom(client: CustomSocket, roomId: string) {
-    client.join(roomId).to(roomId)
+    client.join(roomId);
+    client.broadcast.to(roomId)
       .emit('users-changed', {user: client.user.nickname, event: 'joined'}); <i class="conum" data-value="2"></i><b>(2)</b>
   }
 
@@ -1193,9 +1207,9 @@ export class MessagesGateway implements OnGatewayDisconnect {
   async addMessage(client: CustomSocket, message: Message) {
     message.owner = client.user._id;
     message.created = new Date();
-    message = (await this.messagesModel.create(message)).toJSON();
-    message.owner = {_id: client.user._id, nickname: client.user.nickname};
-    client.server.in(message.room as string).emit('message', message);
+    message = await this.messagesModel.create(message);
+    message.owner = {_id: client.user._id, nickname: client.user.nickname} as User;
+    this.server.in(message.room as string).emit('message', message);
   }
 }</code></pre>
 </div>
@@ -1303,18 +1317,18 @@ export class LoginPage implements OnInit {
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="html" class="language-html hljs">&lt;ion-content&gt;
-  &lt;ion-row justify-content-center&gt;
+  &lt;ion-row class="ion-justify-content-center"&gt;
     &lt;ion-col sizeXl="3" sizeLg="4" sizeMd="6" sizeSm="9" sizeXs="12"&gt;
       &lt;ion-card&gt;
         &lt;ion-card-content&gt;
           &lt;form #f="ngForm" (submit)="authSvc.login(credentials)"&gt; <i class="conum" data-value="1"></i><b>(1)</b>
             &lt;ion-item&gt;
               &lt;ion-label position="floating"&gt;Nickname:&lt;/ion-label&gt; <i class="conum" data-value="2"></i><b>(2)</b>
-              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" required minlength="5"&gt;&lt;/ion-input&gt;
+              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" [required]="true" minlength="5"&gt;&lt;/ion-input&gt;
             &lt;/ion-item&gt;
             &lt;ion-item&gt;
               &lt;ion-label position="floating"&gt;Password:&lt;/ion-label&gt; <i class="conum" data-value="3"></i><b>(3)</b>
-              &lt;ion-input type="password" name="password" [(ngModel)]="credentials.password" required minlength="6"&gt;&lt;/ion-input&gt;
+              &lt;ion-input type="password" name="password" [(ngModel)]="credentials.password" [required]="true" minlength="6"&gt;&lt;/ion-input&gt;
             &lt;/ion-item&gt;
             &lt;div class="ion-padding"&gt;
               &lt;ion-button expand="full" type="submit" [disabled]="f.invalid"&gt;Login&lt;/ion-button&gt; <i class="conum" data-value="4"></i><b>(4)</b>
@@ -1383,7 +1397,11 @@ import { AuthService } from '../../services/auth.service';
 })
 export class SignUpPage implements OnInit {
 
-  credentials: any = {};
+  credentials: {
+    nickname?: string,
+    password?: string,
+    confirmPassword?: string
+  } = {};
 
   constructor(public authSvc: AuthService) { }
 
@@ -1399,24 +1417,24 @@ export class SignUpPage implements OnInit {
 <div class="listingblock">
 <div class="content">
 <pre class="highlightjs highlight nowrap"><code data-lang="html" class="language-html hljs">&lt;ion-content&gt;
-  &lt;ion-row justify-content-center&gt;
+  &lt;ion-row class="ion-justify-content-center"&gt;
     &lt;ion-col sizeXl="3" sizeLg="4" sizeMd="6" sizeSm="9" sizeXs="12"&gt;
       &lt;ion-card&gt;
         &lt;ion-card-content&gt;
           &lt;form #f="ngForm" (submit)="authSvc.signUp(credentials)"&gt;
             &lt;ion-item&gt;
               &lt;ion-label position="floating"&gt;Nickname:&lt;/ion-label&gt;
-              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" required minlength="5"&gt;&lt;/ion-input&gt;
+              &lt;ion-input name="nickname" [(ngModel)]="credentials.nickname" [required]="true" minlength="5"&gt;&lt;/ion-input&gt;
             &lt;/ion-item&gt;
             &lt;ion-item&gt;
               &lt;ion-label position="floating"&gt;Password:&lt;/ion-label&gt;
               &lt;ion-input type="password" name="password" [(ngModel)]="credentials.password" #password="ngModel"
-                         required minlength="6"&gt;&lt;/ion-input&gt;
+                         [required]="true" minlength="6"&gt;&lt;/ion-input&gt;
             &lt;/ion-item&gt;
             &lt;ion-item&gt;
               &lt;ion-label position="floating"&gt;Confirm Password:&lt;/ion-label&gt;
               &lt;ion-input type="password" name="confirmPassword" [(ngModel)]="credentials.confirmPassword"
-                         [equalTo]="password" required minlength="6"&gt;&lt;/ion-input&gt;
+                         [equalTo]="password.control" [required]="true" minlength="6"&gt;&lt;/ion-input&gt;
             &lt;/ion-item&gt;
             &lt;div class="ion-padding"&gt;
               &lt;ion-button expand="full" type="submit" [disabled]="f.invalid"&gt;Sign Up&lt;/ion-button&gt;
@@ -1481,7 +1499,7 @@ export class AuthService {
   }
 
   logout() { <i class="conum" data-value="5"></i><b>(5)</b>
-    this.http.get(environment.apiUrl + 'auth/logout').subscribe(resp =&gt; {
+    this.http.post(environment.apiUrl + 'auth/logout', null).subscribe(resp =&gt; {
       sessionStorage.removeItem('user_token');
       this.loggedInSvc.loggedIn$.next(false);
       this.navCtrl.navigateRoot('/login');
@@ -1558,6 +1576,7 @@ export class LoggedInService {
     this.loggedIn$.subscribe(loggedIn =&gt; { <i class="conum" data-value="3"></i><b>(3)</b>
       if (loggedIn) {
         socket.ioSocket.io.opts.query = {token: jwtHelper.tokenGetter()};
+        console.log('socket.ioSocket.io.opts.query: ', socket.ioSocket.io.opts.query)
         socket.connect();
       } else {
         socket.disconnect();
@@ -1613,8 +1632,8 @@ export class LoggedInService {
 <pre class="highlightjs highlight nowrap"><code data-lang="sh" class="language-sh hljs">    JwtModule.forRoot({
       config: {
         tokenGetter,
-        whitelistedDomains: [environment.baseUrl],
-        blacklistedRoutes: ['/login', '/sign-up']
+        allowedDomains: [environment.baseUrl],
+        disallowedRoutes: ['/login', '/sign-up']
       }
     }),</code></pre>
 </div>
@@ -1679,6 +1698,7 @@ import { CanActivate } from '@angular/router';
 import { Observable } from 'rxjs';
 import { NavController } from '@ionic/angular';
 import { LoggedInService } from '../services/logged-in.service';
+import { map } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root'
@@ -1687,12 +1707,12 @@ export class IsNotLoggedInGuard implements CanActivate {
   constructor(private loggedInSvc: LoggedInService, private navCtrl: NavController) {}
 
   canActivate(): Observable&lt;boolean&gt; {
-    return this.loggedInSvc.loggedIn$.map(loggedIn =&gt; {
+    return this.loggedInSvc.loggedIn$.pipe(map(loggedIn =&gt; {
       if (loggedIn) {
         this.navCtrl.navigateRoot('/select-room', {replaceUrl: true});
       }
       return !loggedIn;
-    });
+    }));
   }
 }</code></pre>
 </div>
