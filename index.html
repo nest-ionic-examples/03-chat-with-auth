@@ -451,7 +451,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#_modify_user_model">Modify User Model</a></li>
 <li><a href="#_add_currentuser_annotation">Add CurrentUser annotation</a></li>
 <li><a href="#_add_auth_controller">Add Auth Controller</a></li>
-<li><a href="#_add_unauthrizederrorfilter">Add UnauthrizedErrorFilter</a></li>
+<li><a href="#_add_unauthorizederrorfilter">Add UnauthorizedErrorFilter</a></li>
 <li><a href="#_add_authadapter">Add AuthAdapter</a></li>
 <li><a href="#_modify_messagesgateway">Modify MessagesGateway</a></li>
 </ul>
@@ -522,7 +522,7 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="sect2">
 <h3 id="_add_required_libraries">Add Required Libraries</h3>
 <div class="paragraph">
-<p>In order to add support for authentication we are going to use a library called: <code>express-jwt</code>. As you can notice, this library is for an <code>expressjs</code> server. However you should remember that <code>nest-js</code> is just a framework made using typescript that runs on a <code>expressjs</code> server. So that, our next step will be to add <code>express-jwt</code> and some other libraries running next command:</p>
+<p>In order to add support for authentication we are going to use a library called: <code>express-jwt</code>. As you can notice, this library is for an <code>expressjs</code> server. However, you should remember that <code>nest-js</code> is just a framework made using typescript that runs on a <code>expressjs</code> server. So that, our next step will be to add <code>express-jwt</code> and some other libraries running next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -534,7 +534,7 @@ npm i -D @types/express-jwt @types/jsonwebtoken  @types/bcrypt @types/dotenv</co
 <div class="sect2">
 <h3 id="_create_environment_files">Create Environment files</h3>
 <div class="paragraph">
-<p>Environment files are useful to save global configuration variables that will be used across the application. There are several ways to use this, for example you could see how the <a href="https://docs.nestjs.com/techniques/configuration">NestJs documentation</a> suggest to use it. However I will show you a shorter approach. This approach consist on creating <code>*.env</code> files under <code>environments</code> folder and <code>environment.ts</code> under <code>src</code> folder. So first created <code>environments/local.env</code> and add next code:</p>
+<p>Environment files are useful to save global configuration variables that will be used across the application. There are several ways to use this, for example you could see how the <a href="https://docs.nestjs.com/techniques/configuration">NestJs documentation</a> suggest to use it. However, I will show you a shorter approach. This approach consist on creating <code>*.env</code> files under <code>environments</code> folder and <code>environment.ts</code> under <code>src</code> folder. So first created <code>environments/local.env</code> and add next code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -645,7 +645,7 @@ JWT_SECRET_PASSWORD=supper-secret</code></pre>
 <div class="sect2">
 <h3 id="_add_authmiddleware">Add AuthMiddleware</h3>
 <div class="paragraph">
-<p>There are several ways of adding authentication to a NestJs application, you can check the <a href="https://docs.nestjs.com/techniques/authentication">authentication documentation</a> to see one of them. However I am going to show you a shorter way of adding authentication to a NestJs app. This shorter way consist on using <code>express-jwt</code> library which contains a function that allows us to create an authentication middleware. This middleware will run before any of the controller methods execution. This at the same time will allow us to reduce the work of adding an <code>AuthGuard</code> for each of the controllers methods. To do that, run next command:</p>
+<p>There are several ways of adding authentication to a NestJs application, you can check the <a href="https://docs.nestjs.com/techniques/authentication">authentication documentation</a> to see one of them. However, I am going to show you a shorter way of adding authentication to a NestJs app. This shorter way consist on using <code>express-jwt</code> library which contains a function that allows us to create an authentication middleware. This middleware will run before any of the controller methods execution. This at the same time will allow us to reduce the work of adding an <code>AuthGuard</code> for each of the controllers methods. To do that, run next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -781,13 +781,13 @@ export class AppModule implements NestModule {
 </table>
 </div>
 <div class="paragraph">
-<p>After Adding this middleware all request parameter passed to controllers will have added an <code>user</code> attribute. This attribute will contain the decoded json-web-token. This json-web-token will contain the <code>user._id</code> and the <code>user.nickname</code> values. Also this json-web-token will be created every time a user logs in.</p>
+<p>After Adding this middleware all request parameter passed to controllers will have added an <code>user</code> attribute. This attribute will contain the decoded json-web-token. This json-web-token will contain the <code>user._id</code> and the <code>user.nickname</code> values. Also, this json-web-token will be created every time a user logs in.</p>
 </div>
 </div>
 <div class="sect2">
 <h3 id="_modify_user_model">Modify User Model</h3>
 <div class="paragraph">
-<p>We need to modify <code>user.model.ts</code> so it can handle <code>password</code> and <code>loggedIn</code> attributes. Also we need to make <code>nickname</code> unique, so it is not mistaken with other users during authentication. To do that change <code>user.model.ts</code> with next code:</p>
+<p>We need to modify <code>user.model.ts</code> so it can handle <code>password</code> and <code>loggedIn</code> attributes. Also, we need to make <code>nickname</code> unique, so it is not mistaken with other users during authentication. To do that change <code>user.model.ts</code> with next code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -880,7 +880,7 @@ export class SomeController {
 </table>
 </div>
 <div class="paragraph">
-<p>However this approach is not too clean. It will be better if we can do this for all controller methods and get the user information directly. NestJs has the ability to do that by creating <code>CurrentUser</code> annotation which will be in charge of retrieving this value. To do that we need to create a new file <code>decorators/current-user.decorator.ts</code> and add next code:</p>
+<p>However, this approach is not too clean. It will be better if we can do this for all controller methods and get the user information directly. NestJs has the ability to do that by creating <code>CurrentUser</code> annotation which will be in charge of retrieving this value. To do that we need to create a new file <code>decorators/current-user.decorator.ts</code> and add next code:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -959,11 +959,11 @@ export class AuthController {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Handles the <code>POST</code> request to <code>api/auth/login</code> url. This method will use the <code>nickname</code> coming from <code>credentials</code> body parameter and search for a user matching this <code>nickname</code>. If the user does not exist then throws an <code>UnauthorizedException</code>. If the user exists then compares the <code>credentials.password</code> with the one saved in the database. To do this comparision we use the <code>compare</code> method from the <code>bcrypt</code> library. If the passwords do not match then we throw an <code>UnauthorizedException</code>. If the passwords match then we set <code>user.loggedIn = true</code> and save the value to the database. Finally we send back to the client an object containing the json-web-token information, which at the same times contains <code>user._id</code> and <code>user.nickname</code>. This token is encoded by mean of the <code>sign</code> function of the <code>jsonwebtoken</code> library.</td>
+<td>Handles the <code>POST</code> request to <code>api/auth/login</code> url. This method will use the <code>nickname</code> coming from <code>credentials</code> body parameter and search for a user matching this <code>nickname</code>. If the user does not exist then throws an <code>UnauthorizedException</code>. If the user exists then compares the <code>credentials.password</code> with the one saved in the database. To do this comparison we use the <code>compare</code> method from the <code>bcrypt</code> library. If the passwords do not match then we throw an <code>UnauthorizedException</code>. If the passwords match then we set <code>user.loggedIn = true</code> and save the value to the database. Finally, we send back to the client an object containing the json-web-token information, which at the same times contains <code>user._id</code> and <code>user.nickname</code>. This token is encoded by mean of the <code>sign</code> function of the <code>jsonwebtoken</code> library.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Handles the <code>GET</code> request to <code>api/auth/logout</code> url. This method will get the current user using the <code>CurrentUser</code> annotation created previously. Then it will sets <code>user.loggedIn = false</code> in the database. And finally it will send back an object containing a message <code>Logout Successfully</code>.</td>
+<td>Handles the <code>POST</code> request to <code>api/auth/logout</code> url. This method will get the current user using the <code>CurrentUser</code> annotation created previously. Then it will set <code>user.loggedIn = false</code> in the database. And finally it will send back an object containing a message <code>Logout Successfully</code>.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -985,7 +985,7 @@ In next tutorial we will add validations so the controller methods are more secu
 </div>
 </div>
 <div class="sect2">
-<h3 id="_add_unauthrizederrorfilter">Add UnauthrizedErrorFilter</h3>
+<h3 id="_add_unauthorizederrorfilter">Add UnauthorizedErrorFilter</h3>
 <div class="paragraph">
 <p>At this moment if you send any http request without authorization or with an expired token you will receive next response:</p>
 </div>
@@ -1079,7 +1079,7 @@ bootstrap();</code></pre>
 </table>
 </div>
 <div class="paragraph">
-<p>Afther doing that you are going to get a response similar to next one whenever there is an error:</p>
+<p>After doing that you are going to get a response similar to next one whenever there is an error:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -1134,7 +1134,7 @@ export class AuthAdapter extends IoAdapter {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td>Creates the <code>CustomSocket</code> interface which allows us to stores the <code>decodedToken</code> object. This interface is not really needed because we could use <code>any</code> instead. However this will make easier to use the stored <code>decodedToken</code> variable in other classes.</td>
+<td>Creates the <code>CustomSocket</code> interface which allows us to store the <code>decodedToken</code> object. This interface is not really needed because we could use <code>any</code> instead. However, this will make easier to use the stored <code>decodedToken</code> variable in other classes.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1154,7 +1154,7 @@ export class AuthAdapter extends IoAdapter {
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
-<td>If the handshake query does not contains the token value then it sends an error with message <code>Authentication error</code>.</td>
+<td>If the handshake query does not contain the token value then it sends an error with message <code>Authentication error</code>.</td>
 </tr>
 </table>
 </div>
@@ -1230,7 +1230,7 @@ export class MessagesGateway implements OnGatewayDisconnect {
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
-<td>Listen for client <code>add-message</code>, then sets the <code>message.owner</code> using the <code>client.decodedToken._id</code> value. After that it save it to the <code>messages</code> collection in the database. Finally it sends back the created message to the clients connected tho the same room.</td>
+<td>Listen for client <code>add-message</code>, then sets the <code>message.owner</code> using the <code>client.decodedToken._id</code> value. After that it save it to the <code>messages</code> collection in the database. Finally, it sends back the created message to the clients connected tho the same room.</td>
 </tr>
 </table>
 </div>
@@ -1241,7 +1241,7 @@ export class MessagesGateway implements OnGatewayDisconnect {
 <h2 id="_ionic_application">Ionic Application</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>In the previous tutorial inside our Ionic chat app we modified the first screen, so after setting the nickname we go to another page where we select the chat room from a list, and then in the last screen we will only show messages for that specified chat room. In this tutorial we are going to modify the first screen and add a login form with username and password boxes. To do that, we are going to add a login page. After that we are going to create a sign-up page so users can be add themselves to our app.</p>
+<p>In the previous tutorial inside our Ionic chat app we modified the first screen, so after setting the nickname we go to another page where we select the chat room from a list, and then in the last screen we will only show messages for that specified chat room. In this tutorial we are going to modify the first screen and add a login form with username and password boxes. To do that, we are going to add a login page. After that we are going to create a sign-up page so users can be added themselves to our app.</p>
 </div>
 <div class="admonitionblock note">
 <table>
@@ -1269,7 +1269,7 @@ export class MessagesGateway implements OnGatewayDisconnect {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g page pages/login</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g page pages/login</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1379,7 +1379,7 @@ export class LoginPage implements OnInit {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g page pages/sign-up</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g page pages/sign-up</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1457,7 +1457,7 @@ export class SignUpPage implements OnInit {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g service services/auth</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g service services/auth</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1526,7 +1526,7 @@ export class AuthService {
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
-<td>Injects services needed.</td>
+<td>Injects needed services.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="4"></i><b>4</b></td>
@@ -1534,7 +1534,7 @@ export class AuthService {
 </tr>
 <tr>
 <td><i class="conum" data-value="5"></i><b>5</b></td>
-<td>Creates a GET request to the <code>auth/logout</code> api. Once the response is received, it removes the <code>user_token</code> from <code>sessionStorage</code>, emits <code>loggedIn = false</code>, and navigates to <code>login</code> page.</td>
+<td>Creates a POST request to the <code>auth/logout</code> api. Once the response is received, it removes the <code>user_token</code> from <code>sessionStorage</code>, emits <code>loggedIn = false</code>, and navigates to <code>login</code> page.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="6"></i><b>6</b></td>
@@ -1550,7 +1550,7 @@ export class AuthService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g service services/logged-in</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g service services/logged-in</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1591,7 +1591,7 @@ export class LoggedInService {
 <table>
 <tr>
 <td><i class="conum" data-value="1"></i><b>1</b></td>
-<td><code>loggedIn$</code> subject will keep in memory the logged-in status. Also it will emit the new value whenever the user changes his status. Furthermore, we use a <code>ReplaySubject</code> so new subscribers always get the last value, this is useful for guards since they creates a new subscriber every time an url check occurs.</td>
+<td><code>loggedIn$</code> subject will keep in memory the logged-in status. Also, it will emit the new value whenever the user changes his status. Furthermore, we use a <code>ReplaySubject</code> so new subscribers always get the last value, this is useful for guards since they create a new subscriber every time an url check occurs.</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
@@ -1607,11 +1607,11 @@ export class LoggedInService {
 <div class="sect2">
 <h3 id="_add_auth0angular_jwt_package">Add @auth0/angular-jwt package</h3>
 <div class="paragraph">
-<p>Maybe the easiest way of handling authentication in any angular app is using the <code>@auth0/angular-jwt</code> package. This package creates an http interceptor and we will only need to add some small configurations parameters to the module to use it. Saying that the next step will be to run next command:</p>
+<p>Maybe the easiest way of handling authentication in any angular app is using the <code>@auth0/angular-jwt</code> package. This package creates a http interceptor, and we will only need to add some small configurations parameters to the module to use it. Saying that the next step will be to run next command:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">npm i -s @auth0/angular-jwt</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">npm i -s @auth0/angular-jwt</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1646,7 +1646,7 @@ export class LoggedInService {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g guard guards/is-logged-in</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g guard guards/is-logged-in</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1685,7 +1685,7 @@ export class IsLoggedInGuard implements CanActivate {
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g guard guards/is-not-logged-in</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g guard guards/is-not-logged-in</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1771,7 +1771,7 @@ export class AppRoutingModule {}</code></pre>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-none hljs">ionic g interceptor interceptors/http-errors</code></pre>
+<pre class="highlightjs highlight"><code data-lang="sh" class="language-sh hljs">ionic g interceptor interceptors/http-errors</code></pre>
 </div>
 </div>
 <div class="paragraph">
